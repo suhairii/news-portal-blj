@@ -1,0 +1,122 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom CSS untuk news portal */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .news-card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden;
+  }
+  
+  .news-card:hover img {
+    @apply scale-105;
+  }
+  
+  .news-card img {
+    @apply transition-transform duration-300;
+  }
+  
+  .category-badge {
+    @apply text-xs font-semibold px-3 py-1 rounded-full text-white;
+  }
+  
+  .category-politik {
+    @apply bg-blue-600;
+  }
+  
+  .category-ekonomi {
+    @apply bg-green-600;
+  }
+  
+  .category-teknologi {
+    @apply bg-purple-600;
+  }
+  
+  .category-olahraga {
+    @apply bg-red-600;
+  }
+  
+  .category-hiburan {
+    @apply bg-pink-600;
+  }
+  
+  .category-kesehatan {
+    @apply bg-yellow-600;
+  }
+  
+  .category-pendidikan {
+    @apply bg-indigo-600;
+  }
+}
+
+@layer utilities {
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  @keyframes marquee {
+    0% { 
+      transform: translateX(100%); 
+    }
+    100% { 
+      transform: translateX(-100%); 
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 1.5rem;
+  }
+  
+  .hero-description {
+    font-size: 0.875rem;
+  }
+}
+
+/* Dark mode support (opsional) */
+@media (prefers-color-scheme: dark) {
+  .dark-mode {
+    @apply bg-gray-900 text-white;
+  }
+}

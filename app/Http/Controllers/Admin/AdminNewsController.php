@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AdminNewsController extends Controller
 {
     public function index()
     {
-        $news = News::latest()->paginate(10);
+        $news = News::orderBy('created_at', 'desc')->paginate(10);
         return view('admin.news.index', compact('news'));
     }
 
@@ -22,25 +23,33 @@ class AdminNewsController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'excerpt' => 'required',
+        $request->validate([
+            'title' => 'required|string|max:255',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category' => 'required',
-            'author' => 'required',
-            'status' => 'required|in:draft,published',
-            'featured' => 'boolean'
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category' => 'required|string|max:255',
+            'published_at' => 'nullable|date'
         ]);
 
-        if ($request->hasFile('image')) {
-            // Ubah path dari 'news' ke 'image'
-            $validated['image'] = $request->file('image')->store('image', 'public');
+        $data = $request->only(['title', 'content', 'category', 'published_at']);
+
+        // Generate slug
+        $data['slug'] = Str::slug($request->title);
+
+        // Handle thumbnail upload
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
+            $data['thumbnail'] = $thumbnailPath;
         }
 
-        News::create($validated);
+        News::create($data);
 
-        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil ditambahkan!');
+        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil dibuat!');
+    }
+
+    public function show(News $news)
+    {
+        return view('admin.news.show', compact('news'));
     }
 
     public function edit(News $news)
@@ -50,129 +59,81 @@ class AdminNewsController extends Controller
 
     public function update(Request $request, News $news)
     {
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'excerpt' => 'required',
+        $request->validate([
+            'title' => 'required|string|max:255',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category' => 'required',
-            'author' => 'required',
-            'status' => 'required|in:draft,published',
-            'featured' => 'boolean'
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category' => 'required|string|max:255',
+            'published_at' => 'nullable|date'
         ]);
 
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($news->image) {
-                Storage::disk('public')->delete($news->image);
-            }
-            // Ubah path dari 'news' ke 'image'
-            $validated['image'] = $request->file('image')->store('image', 'public');
+        $data = $request->only(['title', 'content', 'category', 'published_at']);
+
+        // Generate slug if title changed
+        if ($request->title !== $news->title) {
+            $data['slug'] = Str::slug($request->title);
         }
 
-        $news->update($validated);
+        // Handle thumbnail upload
+        if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail
+            if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+                Storage::disk('public')->delete($news->thumbnail);
+            }
 
-        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil diperbarui!');
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
+            $data['thumbnail'] = $thumbnailPath;
+        }
+
+        $news->update($data);
+
+        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil diupdate!');
     }
 
     public function destroy(News $news)
     {
-        if ($news->image) {
-            Storage::disk('public')->delete($news->image);
+        // Delete thumbnail if exists
+        if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+            Storage::disk('public')->delete($news->thumbnail);
         }
-        
+
         $news->delete();
+
         return redirect()->route('admin.news.index')->with('success', 'Berita berhasil dihapus!');
     }
 
-    /**
-     * Upload gambar untuk content CKEditor
-     * Akan disimpan di public/storage/imagesNews/
-     */
     public function uploadContentImage(Request $request)
     {
-        try {
-            $request->validate([
-                'upload' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // Max 5MB
+        $request->validate([
+            'upload' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        if ($request->hasFile('upload')) {
+            $image = $request->file('upload');
+            $imagePath = $image->store('content-images', 'public');
+            $imageUrl = Storage::url($imagePath);
+
+            return response()->json([
+                'uploaded' => true,
+                'url' => $imageUrl
             ]);
-
-            if ($request->hasFile('upload')) {
-                $file = $request->file('upload');
-                
-                // Generate unique filename dengan timestamp
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                
-                // Simpan ke storage/app/public/imagesNews
-                $path = $file->storeAs('imagesNews', $filename, 'public');
-                
-                // URL yang bisa diakses dari public
-                $url = asset('storage/' . $path);
-                
-                return response()->json([
-                    'success' => true,
-                    'url' => $url,
-                    'path' => $path,
-                    'filename' => $filename,
-                    'message' => 'Gambar berhasil diupload'
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak ada file yang diupload'
-            ], 400);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'File tidak valid: ' . implode(', ', $e->validator->errors()->all())
-            ], 422);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Upload Content Image Error: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat mengupload gambar'
-            ], 500);
         }
+
+        return response()->json([
+            'uploaded' => false,
+            'error' => ['message' => 'Upload failed']
+        ]);
     }
 
-    /**
-     * Hapus gambar content (optional - jika ingin fitur hapus gambar)
-     */
     public function deleteContentImage(Request $request)
     {
-        try {
-            $request->validate([
-                'path' => 'required|string'
-            ]);
+        $imagePath = $request->input('path');
 
-            $path = $request->input('path');
-            
-            // Pastikan path dimulai dengan imagesNews/
-            if (strpos($path, 'imagesNews/') === 0) {
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
-                    
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Gambar berhasil dihapus'
-                    ]);
-                }
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Gambar tidak ditemukan'
-            ], 404);
-
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Delete Content Image Error: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat menghapus gambar'
-            ], 500);
+        if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+            Storage::disk('public')->delete($imagePath);
+            return response()->json(['success' => true]);
         }
+
+        return response()->json(['success' => false]);
     }
 }

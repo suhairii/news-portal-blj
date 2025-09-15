@@ -10,33 +10,57 @@ class NewsController extends Controller
 {
     public function index()
     {
-        $featuredNews = News::published()->featured()->latest()->take(3)->get();
-        $latestNews = News::published()->latest()->take(6)->get();
-        $categories = News::published()->distinct()->pluck('category');
+        // Get featured news (3 latest published news)
+        $featuredNews = News::published()
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        // Get latest news (6 latest published news)
+        $latestNews = News::published()
+            ->latest('published_at')
+            ->take(6)
+            ->get();
+
+        // Get distinct categories from published news
+        $categories = News::published()
+            ->distinct()
+            ->pluck('category')
+            ->filter()
+            ->sort();
 
         return view('news.index', compact('featuredNews', 'latestNews', 'categories'));
     }
 
-    // Method baru untuk landing page
+    // Method for landing page
     public function landing()
     {
-        // Hanya ambil 3 berita featured untuk preview di landing page
-        $featuredNews = News::published()->featured()->latest()->take(3)->get();
+        // Get 3 latest published news for preview on landing page
+        $featuredNews = News::published()
+            ->latest('published_at')
+            ->take(3)
+            ->get();
 
         return view('landingpage', compact('featuredNews'));
     }
+
     public function divisi()
     {
         return view('divisi');
     }
 
-
     public function show(News $news)
     {
-        $news->increment('views');
+        // Check if news is published
+        if (!$news->isPublished()) {
+            abort(404);
+        }
+
+        // Get related news from same category
         $relatedNews = News::published()
             ->where('category', $news->category)
             ->where('id', '!=', $news->id)
+            ->latest('published_at')
             ->take(4)
             ->get();
 
@@ -45,35 +69,54 @@ class NewsController extends Controller
 
     public function category($category)
     {
-        $news = News::published()->where('category', $category)->latest()->paginate(9);
+        $news = News::published()
+            ->where('category', $category)
+            ->latest('published_at')
+            ->paginate(9);
+
+        // Check if category exists
+        if ($news->isEmpty() && $news->currentPage() === 1) {
+            abort(404);
+        }
+
         return view('news.category', compact('news', 'category'));
     }
 
     public function search(Request $request)
     {
         $query = $request->get('q');
+
+        if (empty($query)) {
+            return redirect()->route('news.index');
+        }
+
         $news = News::published()
-            ->where('title', 'like', "%{$query}%")
-            ->orWhere('content', 'like', "%{$query}%")
-            ->latest()
+            ->where(function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('content', 'like', "%{$query}%")
+                    ->orWhere('category', 'like', "%{$query}%");
+            })
+            ->latest('published_at')
             ->paginate(9);
 
         return view('news.search', compact('news', 'query'));
     }
 
     /**
-     * Handle image upload for CKEditor (optional, for local uploads)
+     * Handle image upload for CKEditor
      */
     public function uploadImage(Request $request)
     {
         $request->validate([
-            'upload' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'upload' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('upload')) {
             $image = $request->file('upload');
-            $imageName = time() . '.' . $image->extension();
-            $image->storeAs('public/uploads', $imageName);
+            $imageName = time() . '_' . Str::random(10) . '.' . $image->extension();
+
+            // Store in public/storage/uploads
+            $path = $image->storeAs('public/uploads', $imageName);
 
             return response()->json([
                 'url' => asset('storage/uploads/' . $imageName)
@@ -81,6 +124,67 @@ class NewsController extends Controller
         }
 
         return response()->json(['error' => 'Upload failed'], 400);
+    }
+
+    /**
+     * Handle thumbnail upload
+     */
+    public function uploadThumbnail(Request $request)
+    {
+        $request->validate([
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $image = $request->file('thumbnail');
+            $imageName = 'thumb_' . time() . '_' . Str::random(10) . '.' . $image->extension();
+
+            // Store in public/storage/thumbnails
+            $path = $image->storeAs('public/thumbnails', $imageName);
+
+            return response()->json([
+                'url' => asset('storage/thumbnails/' . $imageName),
+                'path' => 'thumbnails/' . $imageName
+            ]);
+        }
+
+        return response()->json(['error' => 'Upload failed'], 400);
+    }
+
+    /**
+     * Get news by date range
+     */
+    public function getByDateRange(Request $request)
+    {
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        $news = News::published();
+
+        if ($startDate) {
+            $news->whereDate('published_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $news->whereDate('published_at', '<=', $endDate);
+        }
+
+        return $news->latest('published_at')->paginate(9);
+    }
+
+    /**
+     * Get popular news (if you add views tracking later)
+     */
+    public function popular()
+    {
+        // For now, just return latest news
+        // Later you can add views column and sort by views
+        $popularNews = News::published()
+            ->latest('published_at')
+            ->take(10)
+            ->get();
+
+        return view('news.popular', compact('popularNews'));
     }
 
     /**
@@ -122,18 +226,6 @@ class NewsController extends Controller
             'span'
         ];
 
-        // List of allowed attributes for specific tags
-        $allowedAttributes = [
-            'a' => ['href', 'target', 'rel', 'title'],
-            'img' => ['src', 'alt', 'title', 'width', 'height', 'class', 'style'],
-            'figure' => ['class'],
-            'table' => ['class', 'style'],
-            'th' => ['colspan', 'rowspan'],
-            'td' => ['colspan', 'rowspan'],
-            'div' => ['class'],
-            'span' => ['class', 'style']
-        ];
-
         // Use strip_tags to remove unwanted tags but keep allowed ones
         $content = strip_tags($content, '<' . implode('><', $allowedTags) . '>');
 
@@ -145,7 +237,6 @@ class NewsController extends Controller
      */
     public static function validateExternalImages($content)
     {
-        // Pattern to match img tags
         $pattern = '/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i';
 
         return preg_replace_callback($pattern, function ($matches) {
@@ -153,7 +244,11 @@ class NewsController extends Controller
             $src = $matches[1];
 
             // Check if it's an external URL
-            if (filter_var($src, FILTER_VALIDATE_URL) && (strpos($src, 'http://') === 0 || strpos($src, 'https://') === 0)) {
+            if (
+                filter_var($src, FILTER_VALIDATE_URL) &&
+                (strpos($src, 'http://') === 0 || strpos($src, 'https://') === 0)
+            ) {
+
                 // Add loading="lazy" and error handling attributes
                 if (strpos($fullTag, 'loading=') === false) {
                     $fullTag = str_replace('<img ', '<img loading="lazy" ', $fullTag);
@@ -186,52 +281,5 @@ class NewsController extends Controller
         $content = self::validateExternalImages($content);
 
         return $content;
-    }
-
-    /**
-     * Get reading time estimate
-     */
-    public static function getReadingTime($content)
-    {
-        // Remove HTML tags for word count
-        $plainText = strip_tags($content);
-        $wordCount = str_word_count($plainText);
-
-        // Average reading speed is 200-250 words per minute
-        $readingTime = ceil($wordCount / 225);
-
-        return max(1, $readingTime); // Minimum 1 minute
-    }
-
-    /**
-     * Extract first image from content for social sharing
-     */
-    public static function extractFirstImage($content)
-    {
-        $pattern = '/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i';
-
-        if (preg_match($pattern, $content, $matches)) {
-            return $matches[1];
-        }
-
-        return null;
-    }
-
-    /**
-     * Generate excerpt from HTML content
-     */
-    public static function generateExcerpt($content, $length = 150)
-    {
-        // Remove HTML tags
-        $plainText = strip_tags($content);
-
-        // Remove extra whitespace
-        $plainText = preg_replace('/\s+/', ' ', trim($plainText));
-
-        if (strlen($plainText) <= $length) {
-            return $plainText;
-        }
-
-        return substr($plainText, 0, $length) . '...';
     }
 }

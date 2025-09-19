@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Berita - PT. Bumi Laksamana Jaya</title>
-    <meta name="description" content="Kelola Berita PT. Bumi Laksamana Jaya - Oil & Gas Solutions">
+    <title>Kelola Partnership - PT. Bumi Laksamana Jaya</title>
+    <meta name="description" content="Kelola Partnership PT. Bumi Laksamana Jaya - Oil & Gas Solutions">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Fonts -->
@@ -14,9 +14,6 @@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         :root {
@@ -46,12 +43,10 @@
             --secondary-900: #7f1d1d;
             --secondary-950: #450a0a;
 
-            /* Oil-themed Colors */
+            /* Oil-themed Colors for buttons */
             --oil-gold: #fbbf24;
-            --oil-dark: #1f2937;
             --oil-amber: #f59e0b;
             --oil-orange: #ea580c;
-            --oil-black: #111827;
 
             /* Neutral Colors */
             --gray-50: #f9fafb;
@@ -65,11 +60,6 @@
             --gray-800: #1f2937;
             --gray-900: #111827;
 
-            /* White background */
-            --bg-white: #ffffff;
-            --bg-light: #fefefe;
-
-            /* Sidebar width */
             --sidebar-width: 260px;
             --sidebar-collapsed-width: 70px;
         }
@@ -93,7 +83,6 @@
             min-height: 100vh;
         }
 
-        /* Clean Background */
         .dashboard-bg {
             position: fixed;
             top: 0;
@@ -120,30 +109,6 @@
             }
         }
 
-        /* Glassmorphism Components */
-        .glass {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
-        }
-
-        .glass-strong {
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
-            box-shadow:
-                0 16px 40px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        /* Dashboard Layout */
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
@@ -151,7 +116,6 @@
             z-index: 10;
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
@@ -163,7 +127,6 @@
             margin-left: var(--sidebar-collapsed-width);
         }
 
-        /* Mobile Menu Button */
         .mobile-menu-btn {
             display: none;
             position: fixed;
@@ -192,7 +155,6 @@
             box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
         }
 
-        /* Header */
         .page-header {
             margin-bottom: 2rem;
             display: flex;
@@ -214,37 +176,37 @@
             font-size: 0.9rem;
         }
 
-        /* Action Button */
         .btn-primary {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            background: linear-gradient(135deg, var(--oil-gold), var(--oil-amber));
             color: white;
             text-decoration: none;
             border-radius: 12px;
             font-weight: 600;
             font-size: 0.9rem;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.3);
             border: none;
             cursor: pointer;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+            background: linear-gradient(135deg, var(--oil-amber), var(--oil-orange));
         }
 
-        /* Filter Section */
         .filter-section {
             margin-bottom: 1.5rem;
             padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.35);
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(30px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
         }
 
         .filter-grid {
@@ -279,168 +241,202 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        /* News Grid */
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+        .table-container {
+            background: rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
             margin-bottom: 2rem;
         }
 
-        .news-card {
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(20px);
-        }
-
-        .news-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .news-thumbnail {
+        .table {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: var(--gray-200);
+            border-collapse: collapse;
+            font-size: 0.9rem;
         }
 
-        .news-content {
-            padding: 1.5rem;
+        .table thead {
+            background: rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .news-category {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: var(--primary-100);
-            color: var(--primary-700);
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .table th {
+            padding: 1rem;
+            text-align: left;
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            color: var(--gray-800);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            white-space: nowrap;
         }
 
-        .news-title {
-            font-size: 1.1rem;
-            font-weight: 700;
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-cell {
+            width: 80px;
+            text-align: center;
+        }
+
+        .logo-image {
+            width: 60px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: var(--gray-50);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .partnership-name {
+            font-weight: 600;
             color: var(--gray-900);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .partnership-description {
+            color: var(--gray-600);
+            font-size: 0.8rem;
             line-height: 1.4;
+            max-width: 300px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .news-excerpt {
-            color: var(--gray-600);
-            font-size: 0.85rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .news-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .website-link {
+            color: var(--primary-600);
+            text-decoration: none;
             font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .news-actions {
+        .website-link:hover {
+            color: var(--primary-700);
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-deleted {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .date-cell {
+            color: var(--gray-600);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .actions-cell {
+            white-space: nowrap;
+            min-width: 200px;
+        }
+
+        .action-buttons {
             display: flex;
             gap: 0.5rem;
-            justify-content: center;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         .btn-sm {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            padding: 0.4rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
             text-decoration: none;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
         }
 
         .btn-info {
             background: rgba(6, 182, 212, 0.1);
             color: #0891b2;
-            border: 1px solid rgba(6, 182, 212, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.3);
         }
 
         .btn-info:hover {
             background: rgba(6, 182, 212, 0.2);
             transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
         }
 
         .btn-warning {
             background: rgba(245, 158, 11, 0.1);
             color: #d97706;
-            border: 1px solid rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .btn-warning:hover {
             background: rgba(245, 158, 11, 0.2);
             transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
         }
 
         .btn-danger {
             background: rgba(239, 68, 68, 0.1);
             color: #dc2626;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
             background: rgba(239, 68, 68, 0.2);
             transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
 
         .btn-success {
             background: rgba(34, 197, 94, 0.1);
             color: #16a34a;
-            border: 1px solid rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
         .btn-success:hover {
             background: rgba(34, 197, 94, 0.2);
             transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
         }
 
-        /* Status Badges */
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .status-published {
-            background: rgba(34, 197, 94, 0.1);
-            color: #16a34a;
-        }
-
-        .status-deleted {
-            background: rgba(239, 68, 68, 0.1);
-            color: #dc2626;
-        }
-
-        /* Alert Messages */
         .alert {
             padding: 0.875rem 1.25rem;
             border-radius: 12px;
@@ -451,7 +447,6 @@
             font-size: 0.9rem;
             font-weight: 500;
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
 
         .alert-success {
@@ -466,25 +461,24 @@
             color: var(--secondary-700);
         }
 
-        /* Pagination */
         .pagination-wrapper {
             display: flex;
             justify-content: center;
             margin-top: 2rem;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 3rem 1.5rem;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(30px);
         }
 
         .empty-state i {
             font-size: 3rem;
-            color: var(--gray-400);
+            color: var(--primary-500);
             margin-bottom: 1rem;
         }
 
@@ -500,7 +494,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Mobile Responsive */
         @media (max-width: 1024px) {
             .mobile-menu-btn {
                 display: flex;
@@ -531,22 +524,43 @@
                 grid-template-columns: 1fr;
             }
 
-            .news-grid {
-                grid-template-columns: 1fr;
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 800px;
+            }
+
+            .partnership-description {
+                max-width: 200px;
+            }
+
+            .website-link {
+                max-width: 150px;
             }
         }
 
         @media (max-width: 768px) {
-            .news-actions {
-                flex-direction: column;
+            .table {
+                font-size: 0.8rem;
             }
 
-            .btn-sm {
-                justify-content: center;
+            .table th,
+            .table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .logo-image {
+                width: 45px;
+                height: 35px;
+            }
+
+            .partnership-description {
+                max-width: 150px;
             }
         }
 
-        /* Loading Animation */
         .loading {
             opacity: 0;
             animation: fadeIn 1s ease forwards;
@@ -561,34 +575,27 @@
 </head>
 
 <body class="loading">
-    <!-- Clean Background -->
     <div class="dashboard-bg"></div>
 
-    <!-- Mobile Menu Button -->
     <button class="mobile-menu-btn" onclick="window.toggleMobileSidebar()">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Dashboard Layout -->
-    <div class="dashboard-layout" x-data="newsIndex()">
-        <!-- Include Sidebar -->
+    <div class="dashboard-layout">
         @include('components.sidebar')
 
-        <!-- Main Content -->
-        <main class="main-content" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
-            <!-- Header -->
+        <main class="main-content" id="main-content">
             <header class="page-header">
                 <div class="header-left">
-                    <h1>Kelola Berita</h1>
-                    <p>Manajemen artikel dan berita PT. Bumi Laksamana Jaya</p>
+                    <h1>Kelola Partnership</h1>
+                    <p>Manajemen mitra dan kerja sama PT. Bumi Laksamana Jaya</p>
                 </div>
-                <a href="{{ route('admin.news.create') }}" class="btn-primary">
+                <a href="{{ route('admin.partnerships.create') }}" class="btn-primary">
                     <i class="fas fa-plus"></i>
-                    <span>Tambah Berita</span>
+                    <span>Tambah Partnership</span>
                 </a>
             </header>
 
-            <!-- Alert Messages -->
             @if(session('success'))
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
@@ -604,34 +611,20 @@
             @endif
 
             <!-- Filter Section -->
-            <div class="filter-section glass">
-                <form method="GET" action="{{ route('admin.news.index') }}" class="filter-grid">
+            <div class="filter-section">
+                <form method="GET" action="{{ route('admin.partnerships.index') }}" class="filter-grid">
                     <div class="form-group">
-                        <label for="search">Cari Berita</label>
+                        <label for="search">Cari Partnership</label>
                         <input type="text" id="search" name="search" class="form-control"
-                            placeholder="Judul, kategori, atau konten..." value="{{ request('search') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="category">Kategori</label>
-                        <select id="category" name="category" class="form-control">
-                            <option value="">Semua Kategori</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
-                                    {{ $category }}
-                                </option>
-                            @endforeach
-                        </select>
+                            placeholder="Nama, deskripsi, atau website..." value="{{ request('search') }}">
                     </div>
 
                     <div class="form-group">
                         <label for="status">Status</label>
                         <select id="status" name="status" class="form-control">
                             <option value="">Semua Status</option>
-                            <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Dipublikasi
-                            </option>
-                            <option value="deleted" {{ request('status') == 'deleted' ? 'selected' : '' }}>Dihapus
-                            </option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="deleted" {{ request('status') == 'deleted' ? 'selected' : '' }}>Dihapus</option>
                         </select>
                     </div>
 
@@ -644,123 +637,121 @@
                 </form>
             </div>
 
-            <!-- News Grid -->
-            @if($news->count() > 0)
-                <div class="news-grid">
-                    @foreach($news as $item)
-                        <div class="news-card glass">
-                            <img src="{{ $item->thumbnail_url }}" alt="{{ $item->title }}" class="news-thumbnail">
-
-                            <div class="news-content">
-                                <span class="news-category">{{ $item->category }}</span>
-
-                                <h3 class="news-title">{{ $item->title }}</h3>
-
-                                <p class="news-excerpt">{{ $item->excerpt }}</p>
-
-                                <div class="news-meta">
-                                    <span>{{ $item->formatted_published_date }}</span>
-                                    <span class="status-badge {{ $item->deleted_at ? 'status-deleted' : 'status-published' }}">
-                                        {{ $item->deleted_at ? 'Dihapus' : 'Dipublikasi' }}
-                                    </span>
-                                </div>
-
-                                <div class="news-actions">
-                                    @if(!$item->deleted_at)
-                                        <a href="{{ route('admin.news.show', $item) }}" class="btn-sm btn-info">
-                                            <i class="fas fa-eye"></i>
-                                            <span>Lihat</span>
-                                        </a>
-
-                                        <a href="{{ route('admin.news.edit', $item) }}" class="btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i>
-                                            <span>Edit</span>
-                                        </a>
-
-                                        <form method="POST" action="{{ route('admin.news.destroy', $item) }}"
-                                            style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus berita ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-sm btn-danger">
-                                                <i class="fas fa-trash"></i>
-                                                <span>Hapus</span>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form method="POST" action="{{ route('admin.news.restore', $item->id) }}"
-                                            style="display: inline;"
-                                            onsubmit="return confirm('Yakin ingin memulihkan berita ini?')">
-                                            @csrf
-                                            <button type="submit" class="btn-sm btn-success">
-                                                <i class="fas fa-undo"></i>
-                                                <span>Pulihkan</span>
-                                            </button>
-                                        </form>
-
-                                        <form method="POST" action="{{ route('admin.news.force-delete', $item->id) }}"
-                                            style="display: inline;"
-                                            onsubmit="return confirm('Yakin ingin menghapus permanen? Data tidak bisa dikembalikan!')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-sm btn-danger">
-                                                <i class="fas fa-trash-alt"></i>
-                                                <span>Hapus Permanen</span>
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+            <!-- Partnerships Table -->
+            @if($partnerships->count() > 0)
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="logo-cell">Logo</th>
+                                <th>Partnership</th>
+                                <th>Website</th>
+                                <th>Status</th>
+                                <th>Tanggal Dibuat</th>
+                                <th class="actions-cell">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($partnerships as $partnership)
+                                <tr>
+                                    <td class="logo-cell">
+                                        <img src="{{ $partnership->logo_url }}" alt="{{ $partnership->name }}" 
+                                            class="logo-image">
+                                    </td>
+                                    <td>
+                                        <div class="partnership-name">{{ $partnership->name }}</div>
+                                        @if($partnership->description)
+                                            <div class="partnership-description">{{ $partnership->getExcerpt() }}</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($partnership->website)
+                                            <a href="{{ $partnership->website }}" target="_blank" class="website-link">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                <span>{{ $partnership->website_domain }}</span>
+                                            </a>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {{ $partnership->deleted_at ? 'status-deleted' : 'status-active' }}">
+                                            {{ $partnership->deleted_at ? 'Dihapus' : 'Aktif' }}
+                                        </span>
+                                    </td>
+                                    <td class="date-cell">{{ $partnership->formatted_created_date }}</td>
+                                    <td class="actions-cell">
+                                        <div class="action-buttons">
+                                            @if(!$partnership->deleted_at)
+                                                <a href="{{ route('admin.partnerships.show', $partnership) }}" 
+                                                    class="btn-sm btn-info" title="Lihat Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.partnerships.edit', $partnership) }}" 
+                                                    class="btn-sm btn-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ route('admin.partnerships.destroy', $partnership) }}"
+                                                    style="display: inline;"
+                                                    onsubmit="return confirm('Yakin ingin menghapus partnership ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn-sm btn-danger" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <form method="POST" action="{{ route('admin.partnerships.restore', $partnership->id) }}"
+                                                    style="display: inline;"
+                                                    onsubmit="return confirm('Yakin ingin memulihkan partnership ini?')">
+                                                    @csrf
+                                                    <button type="submit" class="btn-sm btn-success" title="Pulihkan">
+                                                        <i class="fas fa-undo"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ route('admin.partnerships.force-delete', $partnership->id) }}"
+                                                    style="display: inline;"
+                                                    onsubmit="return confirm('Yakin ingin menghapus permanen? Data tidak bisa dikembalikan!')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn-sm btn-danger" title="Hapus Permanen">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Pagination -->
                 <div class="pagination-wrapper">
-                    {{ $news->appends(request()->query())->links() }}
+                    {{ $partnerships->appends(request()->query())->links() }}
                 </div>
             @else
                 <div class="empty-state">
-                    <i class="fas fa-newspaper"></i>
-                    <h3>Belum ada berita</h3>
-                    <p>Belum ada berita yang sesuai dengan filter yang dipilih</p>
-                    <a href="{{ route('admin.news.create') }}" class="btn-primary">
+                    <i class="fas fa-handshake"></i>
+                    <h3>Belum ada partnership</h3>
+                    <p>Belum ada partnership yang sesuai dengan filter yang dipilih</p>
+                    <a href="{{ route('admin.partnerships.create') }}" class="btn-primary">
                         <i class="fas fa-plus"></i>
-                        <span>Tambah Berita Pertama</span>
+                        <span>Tambah Partnership Pertama</span>
                     </a>
                 </div>
             @endif
         </main>
     </div>
 
-    <!-- Scripts -->
     <script>
-        function newsIndex() {
-            return {
-                sidebarCollapsed: false,
-
-                init() {
-                    // Listen for sidebar toggle events
-                    window.addEventListener('sidebarToggle', (event) => {
-                        this.sidebarCollapsed = event.detail.collapsed;
-                    });
-                }
-            }
-        }
-
-        // Add loading animation completion
-        window.addEventListener('load', () => {
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
             document.body.classList.remove('loading');
         });
 
-        // Set up CSRF token for all AJAX requests
-        document.addEventListener('DOMContentLoaded', function () {
-            const token = document.querySelector('meta[name="csrf-token"]');
-            if (token) {
-                window.axios && (window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.getAttribute('content'));
-            }
-        });
-
-        console.log('🗞️ News Index Page loaded successfully!');
+        console.log('🤝 Partnership Index Page loaded successfully!');
     </script>
 </body>
 

@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PT. Bumi Laksamana Jaya</title>
-    <meta name="description" content="Login Portal PT. Bumi Laksamana Jaya - Oil & Gas Solutions">
+    <title>Daftar - PT. Bumi Laksamana Jaya</title>
+    <meta name="description" content="Registrasi Portal PT. Bumi Laksamana Jaya - Oil & Gas Solutions">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Fonts -->
@@ -14,6 +14,9 @@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         :root {
@@ -241,7 +244,7 @@
         }
 
         /* Glass Container */
-        .login-container {
+        .register-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -251,7 +254,7 @@
             z-index: 10;
         }
 
-        .login-card {
+        .register-card {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
@@ -262,19 +265,19 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.5);
             padding: 3rem;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             position: relative;
             overflow: hidden;
         }
 
-        .login-card::before {
+        .register-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 2px;
-            background: var(--primary-500);
+            background: var(--oil-dark);
             border-radius: 2px 2px 0 0;
         }
 
@@ -287,19 +290,19 @@
         .logo-circle {
             width: 80px;
             height: 80px;
-            background: var(--primary-500);
+            background: var(--oil-dark);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1rem;
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 30px rgba(31, 41, 55, 0.3);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .logo-circle:hover {
             transform: scale(1.05) rotate(5deg);
-            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 12px 40px rgba(31, 41, 55, 0.4);
         }
 
         .logo-text {
@@ -313,9 +316,9 @@
         .company-name {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-600);
+            color: var(--oil-dark);
             margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+            text-shadow: 0 2px 4px rgba(31, 41, 55, 0.2);
         }
 
         .company-tagline {
@@ -325,13 +328,19 @@
         }
 
         /* Form Styles */
-        .login-title {
+        .register-title {
             font-size: 2rem;
             font-weight: 800;
             color: var(--gray-900);
             text-align: center;
             margin-bottom: 2rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         .form-group {
@@ -347,7 +356,8 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
-        .form-input {
+        .form-input,
+        .form-select {
             width: 100%;
             padding: 1rem 1.5rem;
             background: rgba(255, 255, 255, 0.2);
@@ -365,10 +375,11 @@
             color: var(--gray-500);
         }
 
-        .form-input:focus {
+        .form-input:focus,
+        .form-select:focus {
             outline: none;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--oil-dark);
+            box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
             background: rgba(255, 255, 255, 0.3);
         }
 
@@ -393,27 +404,6 @@
             color: var(--gray-700);
         }
 
-        /* Remember Me */
-        .remember-section {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .checkbox {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary-500);
-        }
-
-        .checkbox-label {
-            font-size: 0.9rem;
-            color: var(--gray-700);
-            cursor: pointer;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
         /* Buttons */
         .btn {
             width: 100%;
@@ -435,28 +425,6 @@
             gap: 0.5rem;
         }
 
-        .btn-primary {
-            background: var(--primary-500);
-            color: white;
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-600);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         .btn-oil {
             background: var(--oil-dark);
             color: white;
@@ -467,6 +435,31 @@
             background: var(--gray-800);
             transform: translateY(-2px);
             box-shadow: 0 12px 35px rgba(31, 41, 55, 0.5);
+        }
+
+        .btn-oil:active {
+            transform: translateY(0);
+        }
+
+        .btn-oil:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--gray-700);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         /* Alert Messages */
@@ -504,7 +497,7 @@
         }
 
         .action-link {
-            color: var(--primary-600);
+            color: var(--oil-dark);
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
@@ -514,7 +507,7 @@
         }
 
         .action-link:hover {
-            color: var(--primary-700);
+            color: var(--gray-800);
             transform: translateY(-1px);
         }
 
@@ -551,14 +544,68 @@
             }
         }
 
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .password-strength.show {
+            display: block;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            margin-bottom: 0.5rem;
+            background: var(--gray-200);
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak {
+            background: var(--secondary-500);
+            width: 25%;
+        }
+
+        .strength-fair {
+            background: var(--oil-amber);
+            width: 50%;
+        }
+
+        .strength-good {
+            background: var(--primary-500);
+            width: 75%;
+        }
+
+        .strength-strong {
+            background: var(--success-500);
+            width: 100%;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
-            .login-container {
+            .register-container {
                 padding: 1rem;
             }
 
-            .login-card {
+            .register-card {
                 padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
             }
 
             .logo-circle {
@@ -574,13 +621,13 @@
                 font-size: 1.3rem;
             }
 
-            .login-title {
+            .register-title {
                 font-size: 1.75rem;
             }
         }
 
         @media (max-width: 480px) {
-            .login-card {
+            .register-card {
                 padding: 1.5rem;
             }
 
@@ -597,7 +644,7 @@
                 font-size: 1.2rem;
             }
 
-            .login-title {
+            .register-title {
                 font-size: 1.5rem;
             }
         }
@@ -635,9 +682,9 @@
         </svg>
     </div>
 
-    <!-- Login Container -->
-    <div class="login-container">
-        <div class="login-card">
+    <!-- Register Container -->
+    <div class="register-container" x-data="registerForm()">
+        <div class="register-card">
             <!-- Logo Section -->
             <div class="logo-section">
                 <div class="logo-circle">
@@ -647,83 +694,121 @@
                 <p class="company-tagline">Oil & Gas Solutions</p>
             </div>
 
-            <!-- Login Title -->
-            <h2 class="login-title">Login Admin</h2>
+            <!-- Register Title -->
+            <h2 class="register-title">Daftar Akun</h2>
 
             <!-- Alert Messages -->
-            @if ($errors->any())
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>
-                        @foreach ($errors->all() as $error)
-                            {{ $error }}
-                            @if (!$loop->last)<br>@endif
-                        @endforeach
-                    </span>
-                </div>
-            @endif
-
-            @if (session('success'))
+            @if(session('success'))
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     <span>{{ session('success') }}</span>
                 </div>
             @endif
 
-            @if (session('error'))
+            @if(session('error'))
                 <div class="alert alert-error">
                     <i class="fas fa-exclamation-circle"></i>
                     <span>{{ session('error') }}</span>
                 </div>
             @endif
 
-            <!-- Login Form -->
-            <form method="POST" action="{{ route('login.submit') }}" id="loginForm">
+            @if($errors->any())
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        @foreach($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <div x-show="alertMessage" x-transition>
+                <div :class="alertType === 'success' ? 'alert alert-success' : 'alert alert-error'">
+                    <i :class="alertType === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+                    <span x-text="alertMessage"></span>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <form method="POST" action="{{ route('register') }}" x-on:submit="handleSubmit">
                 @csrf
+
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="name" class="form-label">Nama Lengkap *</label>
+                    <input type="text" id="name" name="name" class="form-input" placeholder="Masukkan nama lengkap Anda"
+                        value="{{ old('name') }}" required autocomplete="name" x-model="name">
+                </div>
 
                 <!-- Email Field -->
                 <div class="form-group">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" name="email" class="form-input"
-                        placeholder="admin@bumilaksamanajaya.com" value="{{ old('email') }}" required
-                        autocomplete="email">
+                    <label for="email" class="form-label">Email *</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="nama@email.com"
+                        value="{{ old('email') }}" required autocomplete="email" x-model="email">
                 </div>
 
-                <!-- Password Field -->
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="password-container">
-                        <input type="password" id="password" name="password" class="form-input"
-                            placeholder="Masukkan password Anda" required autocomplete="current-password">
-                        <button type="button" class="password-toggle" onclick="togglePassword()">
-                            <i id="passwordIcon" class="fas fa-eye"></i>
-                        </button>
+                <!-- Password Fields Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password *</label>
+                        <div class="password-container">
+                            <input :type="showPassword ? 'text' : 'password'" id="password" name="password"
+                                class="form-input" placeholder="Minimal 8 karakter" required autocomplete="new-password"
+                                x-model="password" x-on:input="checkPasswordStrength">
+                            <button type="button" class="password-toggle" x-on:click="showPassword = !showPassword">
+                                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            </button>
+                        </div>
+
+                        <!-- Password Strength Indicator -->
+                        <div class="password-strength" :class="password.length > 0 ? 'show' : ''">
+                            <div class="strength-bar">
+                                <div class="strength-fill" :class="passwordStrengthClass"></div>
+                            </div>
+                            <div class="strength-text" x-text="passwordStrengthText"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password_confirmation" class="form-label">Konfirmasi Password *</label>
+                        <div class="password-container">
+                            <input :type="showPasswordConfirm ? 'text' : 'password'" id="password_confirmation"
+                                name="password_confirmation" class="form-input" placeholder="Ulangi password" required
+                                autocomplete="new-password" x-model="passwordConfirm">
+                            <button type="button" class="password-toggle"
+                                x-on:click="showPasswordConfirm = !showPasswordConfirm">
+                                <i :class="showPasswordConfirm ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Remember Me -->
-                <div class="remember-section">
-                    <input type="checkbox" id="remember" name="remember" class="checkbox">
-                    <label for="remember" class="checkbox-label">Ingat saya</label>
+                <!-- Role Selection -->
+                <div class="form-group">
+                    <label for="role" class="form-label">Jenis Akun *</label>
+                    <select id="role" name="role" class="form-select" required x-model="role">
+                        <option value="">Pilih jenis akun</option>
+                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    </select>
                 </div>
 
-                <!-- Login Button -->
-                <button type="submit" class="btn btn-primary" id="loginButton">
-                    <span id="loginText">Login</span>
-                    <i id="loginIcon" class="fas fa-sign-in-alt"></i>
+                <!-- Register Button -->
+                <button type="submit" class="btn btn-oil" :disabled="isLoading">
+                    <span x-text="isLoading ? 'Memproses...' : 'Daftar Akun'"></span>
+                    <i :class="isLoading ? 'fas fa-spinner fa-spin' : 'fas fa-user-plus'"></i>
                 </button>
 
-                <!-- Register Button -->
-                <a href="{{ route('register.form') }}" class="btn btn-oil">
-                    <span>Daftar Akun Baru</span>
-                    <i class="fas fa-user-plus"></i>
+                <!-- Login Link Button -->
+                <a href="{{ route('login') }}" class="btn btn-secondary">
+                    <span>Sudah Punya Akun? Login</span>
+                    <i class="fas fa-sign-in-alt"></i>
                 </a>
             </form>
 
             <!-- Action Links -->
             <div class="action-links">
-                <a href="#" class="action-link">Lupa Password?</a>
-                <span style="color: var(--gray-400);">|</span>
                 <a href="{{ route('landing') }}" class="action-link">Kembali ke Website</a>
             </div>
         </div>
@@ -731,36 +816,123 @@
 
     <!-- Scripts -->
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const passwordIcon = document.getElementById('passwordIcon');
+        function registerForm() {
+            return {
+                name: '',
+                email: '',
+                password: '',
+                passwordConfirm: '',
+                role: '',
+                showPassword: false,
+                showPasswordConfirm: false,
+                isLoading: false,
+                alertMessage: '',
+                alertType: 'error',
+                passwordStrengthClass: '',
+                passwordStrengthText: '',
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordIcon.className = 'fas fa-eye-slash';
-            } else {
-                passwordInput.type = 'password';
-                passwordIcon.className = 'fas fa-eye';
+                init() {
+                    console.log('🛢️ PT BLJ Register Portal initialized with oil theme');
+                },
+
+                showAlert(message, type = 'error') {
+                    this.alertMessage = message;
+                    this.alertType = type;
+
+                    // Auto hide alert after 5 seconds
+                    setTimeout(() => {
+                        this.alertMessage = '';
+                    }, 5000);
+                },
+
+                checkPasswordStrength() {
+                    const password = this.password;
+                    let strength = 0;
+                    let strengthText = '';
+                    let strengthClass = '';
+
+                    if (password.length >= 8) strength++;
+                    if (password.match(/[a-z]/)) strength++;
+                    if (password.match(/[A-Z]/)) strength++;
+                    if (password.match(/[0-9]/)) strength++;
+                    if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+                    switch (strength) {
+                        case 0:
+                        case 1:
+                            strengthText = 'Password terlalu lemah';
+                            strengthClass = 'strength-weak';
+                            break;
+                        case 2:
+                            strengthText = 'Password lemah';
+                            strengthClass = 'strength-fair';
+                            break;
+                        case 3:
+                        case 4:
+                            strengthText = 'Password cukup kuat';
+                            strengthClass = 'strength-good';
+                            break;
+                        case 5:
+                            strengthText = 'Password sangat kuat';
+                            strengthClass = 'strength-strong';
+                            break;
+                    }
+
+                    this.passwordStrengthText = strengthText;
+                    this.passwordStrengthClass = strengthClass;
+                },
+
+                handleSubmit(event) {
+                    event.preventDefault();
+
+                    // Clear previous alerts
+                    this.alertMessage = '';
+
+                    // Basic validation
+                    if (!this.name || !this.email || !this.password || !this.passwordConfirm || !this.role) {
+                        this.showAlert('Harap lengkapi semua field yang wajib diisi');
+                        return;
+                    }
+
+                    // Email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(this.email)) {
+                        this.showAlert('Format email tidak valid');
+                        return;
+                    }
+
+                    // Password validation
+                    if (this.password.length < 8) {
+                        this.showAlert('Password minimal 8 karakter');
+                        return;
+                    }
+
+                    // Password confirmation
+                    if (this.password !== this.passwordConfirm) {
+                        this.showAlert('Konfirmasi password tidak cocok');
+                        return;
+                    }
+
+                    // Name validation
+                    if (this.name.length < 2) {
+                        this.showAlert('Nama minimal 2 karakter');
+                        return;
+                    }
+
+                    // Show loading state
+                    this.isLoading = true;
+
+                    // Submit form (Laravel will handle the rest)
+                    event.target.submit();
+                }
             }
         }
 
-        // Handle form submission for loading state
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            const button = document.getElementById('loginButton');
-            const loginText = document.getElementById('loginText');
-            const loginIcon = document.getElementById('loginIcon');
-
-            // Show loading state
-            loginText.textContent = 'Memproses...';
-            loginIcon.className = 'fas fa-spinner fa-spin';
-            button.disabled = true;
-        });
-
         // Console logging for debugging
-        console.log('🛢️ PT BLJ Login Portal loaded successfully!');
+        console.log('🛢️ PT BLJ Register Portal loaded successfully!');
         console.log('✨ Oil droplets animation activated!');
-        console.log('🔐 Login form ready - Fixed version without Alpine.js interference!');
-        console.log('🎯 Form will submit to Laravel backend properly now!');
+        console.log('🔐 Registration form ready with glassmorphism theme!');
+        console.log('🎯 User registration interface ready!');
     </script>
 </body>
 

@@ -11,7 +11,8 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-
+    <!-- Swiper CSS for Partnership Slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -1523,6 +1524,138 @@
             transform: translateY(-2px) scale(1.02);
         }
 
+        /* Partnership Slider Styles */
+        .partnership-section {
+            padding: 6rem 0;
+            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+        }
+
+        .partnership-slider {
+            margin-top: 3rem;
+        }
+
+        .swiper-container {
+            width: 100%;
+            padding: 2rem 0;
+        }
+
+        .partner-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            height: 180px;
+            cursor: pointer;
+        }
+
+        .partner-slide:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .partner-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: white;
+            padding: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .partner-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            line-height: 1.3;
+            max-width: 140px;
+        }
+
+        /* Swiper Navigation */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: var(--primary-500);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-top: -25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        /* Swiper Pagination */
+        .swiper-pagination {
+            bottom: 0;
+        }
+
+        .swiper-pagination-bullet {
+            background: var(--gray-400);
+            opacity: 0.5;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: var(--primary-500);
+            opacity: 1;
+        }
+
+        /* Responsive Design for Partnership */
+        @media (max-width: 768px) {
+            .partner-slide {
+                height: 160px;
+                padding: 1.5rem 0.75rem;
+            }
+
+            .partner-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .partner-name {
+                font-size: 0.8rem;
+                max-width: 120px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .partner-slide {
+                height: 140px;
+                padding: 1rem 0.5rem;
+            }
+
+            .partner-logo {
+                width: 50px;
+                height: 50px;
+            }
+
+            .partner-name {
+                font-size: 0.75rem;
+                max-width: 100px;
+            }
+        }
+
         /* Contact Section */
         .contact-grid {
             display: grid;
@@ -2442,7 +2575,129 @@
             </div>
         </div>
     </section>
+    <!-- Partnership Section -->
+    <section id="partnership" class="partnership-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">
+                    <i class="fas fa-handshake"></i>
+                    <span>Mitra Strategis</span>
+                </div>
+                <h2 class="section-title">
+                    Mitra <span class="accent-text">Kerjasama</span>
+                </h2>
+                <p class="section-description">
+                    PT BLJ bekerja sama dengan berbagai perusahaan terkemuka untuk membangun ekosistem energi yang kuat
+                    dan berkelanjutan
+                </p>
+            </div>
 
+            <!-- Partnership Slider -->
+            <div class="partnership-slider" data-aos="fade-up" data-aos-delay="200">
+                <div class="swiper partnership-swiper">
+                    <div class="swiper-wrapper">
+                        @php
+                            // Get partnerships from database
+                            $partnerships = \App\Models\Partnership::active()->get();
+
+                            // If no partnerships exist, create sample data for demo
+                            if ($partnerships->isEmpty()) {
+                                $partnerships = collect([
+                                    (object) ['name' => 'Pertamina', 'logo_url' => 'https://via.placeholder.com/100x100/0066cc/ffffff?text=PERTAMINA'],
+                                    (object) ['name' => 'Chevron', 'logo_url' => 'https://via.placeholder.com/100x100/ff6600/ffffff?text=CHEVRON'],
+                                    (object) ['name' => 'Shell', 'logo_url' => 'https://via.placeholder.com/100x100/ffcc00/000000?text=SHELL'],
+                                    (object) ['name' => 'Total Energies', 'logo_url' => 'https://via.placeholder.com/100x100/004d9f/ffffff?text=TOTAL'],
+                                    (object) ['name' => 'ExxonMobil', 'logo_url' => 'https://via.placeholder.com/100x100/ff0000/ffffff?text=EXXON'],
+                                    (object) ['name' => 'BP', 'logo_url' => 'https://via.placeholder.com/100x100/00a651/ffffff?text=BP'],
+                                    (object) ['name' => 'ConocoPhillips', 'logo_url' => 'https://via.placeholder.com/100x100/b41e8e/ffffff?text=CONOCO'],
+                                    (object) ['name' => 'Eni', 'logo_url' => 'https://via.placeholder.com/100x100/006bb6/ffffff?text=ENI'],
+                                ]);
+                            }
+                        @endphp
+
+                        @forelse($partnerships as $partner)
+                            <div class="swiper-slide">
+                                <div class="partner-slide">
+                                    <img src="{{ $partner->logo_url ?? 'https://via.placeholder.com/80x80/cccccc/666666?text=LOGO' }}"
+                                        alt="{{ $partner->name }}" class="partner-logo"
+                                        onerror="this.src='https://via.placeholder.com/80x80/cccccc/666666?text={{ substr($partner->name, 0, 1) }}'">
+                                    <h4 class="partner-name">{{ $partner->name }}</h4>
+                                </div>
+                            </div>
+                        @empty
+                            <!-- Fallback content if no partnerships -->
+                            <div class="swiper-slide">
+                                <div class="partner-slide">
+                                    <img src="https://via.placeholder.com/80x80/0066cc/ffffff?text=PERTAMINA"
+                                        alt="Pertamina" class="partner-logo">
+                                    <h4 class="partner-name">Pertamina</h4>
+                                </div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="partner-slide">
+                                    <img src="https://via.placeholder.com/80x80/ff6600/ffffff?text=CHEVRON" alt="Chevron"
+                                        class="partner-logo">
+                                    <h4 class="partner-name">Chevron</h4>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Navigation buttons -->
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+
+                    <!-- Pagination -->
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
+            <!-- Partnership Info -->
+            <div class="glass-strong" style="padding: 3rem; border-radius: 24px; margin-top: 4rem;" data-aos="fade-up"
+                data-aos-delay="400">
+                <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                    <h3 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: 2rem;">
+                        Membangun Kemitraan Strategis
+                    </h3>
+                    <p style="font-size: 1.1rem; color: var(--gray-600); line-height: 1.7; margin-bottom: 2rem;">
+                        PT BLJ menjalin kemitraan strategis dengan perusahaan-perusahaan oil & gas terkemuka dunia untuk
+                        menghadirkan teknologi terdepan,
+                        berbagi pengetahuan, dan membangun ekosistem energi yang berkelanjutan untuk Indonesia.
+                    </p>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                        <div style="text-align: center;">
+                            <div
+                                style="font-size: 2.5rem; font-weight: 900; color: var(--primary-600); margin-bottom: 0.5rem;">
+                                {{ $partnerships->count() }}+
+                            </div>
+                            <div style="color: var(--gray-600); font-weight: 600;">
+                                Mitra Strategis
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div
+                                style="font-size: 2.5rem; font-weight: 900; color: var(--oil-gold); margin-bottom: 0.5rem;">
+                                15+
+                            </div>
+                            <div style="color: var(--gray-600); font-weight: 600;">
+                                Negara Kerjasama
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div
+                                style="font-size: 2.5rem; font-weight: 900; color: var(--secondary-500); margin-bottom: 0.5rem;">
+                                25+
+                            </div>
+                            <div style="color: var(--gray-600); font-weight: 600;">
+                                Proyek Bersama
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- Contact Section -->
     <section id="contact" class="section">
         <div class="container">
@@ -2642,6 +2897,7 @@
 
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // Fixed Navbar Alpine.js Component Script (for landing page compatibility)
         function fixedNavbar() {
@@ -2945,7 +3201,56 @@
                 }
             }
         });
+        // Initialize Partnership Swiper - Updated Configuration
+        document.addEventListener('DOMContentLoaded', function () {
+            const partnershipSwiper = new Swiper('.partnership-swiper', {
+                slidesPerView: 1, // Mulai dengan 1 slide di mobile
+                spaceBetween: 20,
+                loop: true,
+                centeredSlides: true, // Selalu center
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    480: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                        centeredSlides: true,
+                    },
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 25,
+                        centeredSlides: true,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                        centeredSlides: true,
+                    },
+                    1024: {
+                        slidesPerView: 5,
+                        spaceBetween: 35,
+                        centeredSlides: true,
+                    },
+                    1280: {
+                        slidesPerView: 6,
+                        spaceBetween: 40,
+                        centeredSlides: true,
+                    }
+                }
+            });
 
+            console.log('🤝 Partnership slider initialized with center positioning');
+        });
         console.log('🛢️ PT BLJ Oil & Gas Landing Page loaded successfully!');
         console.log('✨ Oil droplets floating effect activated!');
         console.log('🎯 White background with glassmorphism theme applied!');

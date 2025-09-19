@@ -1,731 +1,995 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ isset($news) ? 'Edit' : 'Tambah' }} Berita - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- CKEditor 5 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor5/40.1.0/ckeditor.min.js"></script>
+    <title>Tambah Berita - PT. Bumi Laksamana Jaya</title>
+    <meta name="description" content="Tambah Berita PT. Bumi Laksamana Jaya - Oil & Gas Solutions">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-up': 'slideUp 0.4s ease-out',
-                        'bounce-subtle': 'bounceSubtle 0.6s ease-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        bounceSubtle: {
-                            '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
-                            '40%': { transform: 'translateY(-3px)' },
-                            '60%': { transform: 'translateY(-2px)' }
-                        }
-                    }
-                }
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        :root {
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --primary-200: #bfdbfe;
+            --primary-300: #93c5fd;
+            --primary-400: #60a5fa;
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --primary-800: #1e40af;
+            --primary-900: #1e3a8a;
+            --primary-950: #172554;
+
+            --secondary-50: #fef2f2;
+            --secondary-100: #fee2e2;
+            --secondary-200: #fecaca;
+            --secondary-300: #fca5a5;
+            --secondary-400: #f87171;
+            --secondary-500: #ef4444;
+            --secondary-600: #dc2626;
+            --secondary-700: #b91c1c;
+            --secondary-800: #991b1b;
+            --secondary-900: #7f1d1d;
+            --secondary-950: #450a0a;
+
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
+            color: var(--gray-900);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .dashboard-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 25%, #f0f9ff 50%, #f1f5f9 75%, #ffffff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            z-index: -1000;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
             }
         }
-    </script>
-    <style>
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .form-input {
-            transition: all 0.3s ease;
-            border: 2px solid #e5e7eb;
-        }
-        
-        .form-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        .form-input:hover {
-            border-color: #9ca3af;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-        }
-        
-        .btn-secondary {
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .floating-label {
+
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
             position: relative;
-        }
-        
-        .floating-label input:focus + label,
-        .floating-label input:not(:placeholder-shown) + label,
-        .floating-label textarea:focus + label,
-        .floating-label textarea:not(:placeholder-shown) + label {
-            transform: translateY(-24px) scale(0.85);
-            color: #3b82f6;
-        }
-        
-        .floating-label label {
-            position: absolute;
-            left: 12px;
-            top: 12px;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            background: white;
-            padding: 0 4px;
-        }
-        
-        .image-preview {
-            transition: all 0.3s ease;
-        }
-        
-        .image-preview:hover {
-            transform: scale(1.02);
+            z-index: 10;
         }
 
-        /* CKEditor Styles */
-        .ck-editor__editable {
-            min-height: 400px !important;
-            max-height: 600px !important;
-            border-radius: 12px !important;
-        }
-
-        .ck.ck-editor {
-            border-radius: 12px !important;
-            border: 2px solid #e5e7eb !important;
-            overflow: hidden;
-        }
-
-        .ck.ck-editor:focus-within {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-        }
-
-        .ck.ck-toolbar {
-            border-bottom: 1px solid #e5e7eb !important;
-            background: #f8fafc !important;
-        }
-
-        .ck-content img {
-            max-width: 100% !important;
-            height: auto !important;
-            border-radius: 8px !important;
-            margin: 10px 0 !important;
-        }
-
-        /* Upload Progress */
-        .upload-progress {
-            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
-            height: 4px;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        /* Notification Styles */
-        .notification {
+        .sidebar-placeholder {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--gray-800) 0%, var(--gray-900) 100%);
             position: fixed;
-            top: 20px;
-            right: 20px;
+            left: 0;
+            top: 0;
+            height: 100vh;
             z-index: 1000;
-            padding: 16px 20px;
-            border-radius: 8px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-left p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-description {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .required {
+            color: var(--secondary-600);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            max-height: 200px;
+        }
+
+        .image-upload {
+            position: relative;
+            width: 250px;
+            height: 200px;
+            border: 2px dashed rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-upload:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .image-upload input {
+            display: none;
+        }
+
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray-500);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .upload-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-500);
+        }
+
+        .image-preview {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .image-preview:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .change-image {
             color: white;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            font-size: 0.8rem;
             font-weight: 500;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        /* Custom Rich Text Editor Styles */
+        .custom-editor {
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
-        .notification.success {
-            background: linear-gradient(135deg, #10b981, #059669);
+        .editor-toolbar {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
-        .notification.error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+        .editor-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            min-width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--primary-600);
+        }
+
+        .editor-btn.active {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-600);
+        }
+
+        .editor-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .editor-content {
+            min-height: 300px;
+            padding: 1rem;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--gray-900);
+        }
+
+        .editor-content:empty:before {
+            content: 'Tulis konten berita di sini...';
+            color: var(--gray-400);
+            font-style: italic;
+        }
+
+        .editor-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .editor-content p {
+            margin-bottom: 1rem;
+        }
+
+        .editor-content h1,
+        .editor-content h2,
+        .editor-content h3 {
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .editor-content h1 {
+            font-size: 1.5rem;
+        }
+
+        .editor-content h2 {
+            font-size: 1.25rem;
+        }
+
+        .editor-content h3 {
+            font-size: 1.125rem;
+        }
+
+        .editor-content ul,
+        .editor-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .editor-content blockquote {
+            border-left: 4px solid var(--primary-300);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: var(--gray-600);
+            font-style: italic;
+        }
+
+        .error-message {
+            color: var(--secondary-600);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--gray-700);
+            border: 1px solid rgba(107, 114, 128, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(107, 114, 128, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            padding: 0.875rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #15803d;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--secondary-700);
+        }
+
+        .file-input-hidden {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 5rem;
+            }
+
+            .main-content.sidebar-collapsed {
+                margin-left: 0;
+                padding-top: 5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .image-upload {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .editor-toolbar {
+                padding: 0.5rem;
+            }
+
+            .editor-btn {
+                min-width: 1.75rem;
+                height: 1.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        .loading {
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
-    <div class="min-h-screen animate-fade-in">
-        <!-- Enhanced Header -->
-        <header class="glass-effect sticky top-0 z-10 border-b border-white/20 shadow-lg">
-            <div class="px-6 py-6">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-newspaper text-white text-lg"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                                {{ isset($news) ? 'Edit' : 'Tambah' }} Berita
-                            </h1>
-                            <p class="text-sm text-gray-500">{{ isset($news) ? 'Perbarui informasi berita' : 'Buat artikel berita baru' }}</p>
+
+<body class="loading">
+    <div class="dashboard-bg"></div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="window.toggleMobileSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-layout">
+        <!-- Include Sidebar -->
+        @include('components.sidebar')
+
+        <main class="main-content" id="main-content">
+            <header class="page-header">
+                <div class="header-left">
+                    <h1>Tambah Berita</h1>
+                    <p>Buat artikel dan berita baru PT. Bumi Laksamana Jaya</p>
+                </div>
+                <a href="{{ route('admin.news.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </a>
+            </header>
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            <div class="form-container">
+                <form method="POST" action="{{ route('admin.news.store') }}" enctype="multipart/form-data"
+                    onsubmit="return syncContentBeforeSubmit(this)">
+                    @csrf
+
+                    <!-- Title Field -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="title" class="form-label">
+                                    Judul <span class="required">*</span>
+                                </label>
+                                <p class="form-description">
+                                    Masukkan judul berita yang menarik dan informatif.
+                                </p>
+                            </div>
+                            <div>
+                                <textarea id="title" name="title" class="form-control"
+                                    placeholder="Masukkan judul berita..." required>{{ old('title') }}</textarea>
+                                @error('title')
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>{{ $message }}</span>
+                                    </div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
-                    <a href="{{ route('admin.news.index') }}" 
-                       class="btn-secondary flex items-center px-4 py-2 text-blue-600 hover:text-blue-800 bg-white rounded-lg border border-blue-200 hover:border-blue-300">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        <span>Kembali ke Daftar</span>
-                    </a>
-                </div>
-            </div>
-        </header>
 
-        <div class="px-6 py-8">
-            <div class="max-w-6xl mx-auto">
-                <!-- Progress Indicator -->
-                <div class="mb-8">
-                    <div class="flex items-center justify-center space-x-4 mb-4">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">1</div>
-                            <span class="ml-2 text-sm font-medium text-blue-600">Informasi Dasar</span>
-                        </div>
-                        <div class="w-16 h-1 bg-blue-200 rounded"></div>
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-semibold">2</div>
-                            <span class="ml-2 text-sm font-medium text-gray-500">Publikasi</span>
+                    <!-- Thumbnail Field -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="thumbnail" class="form-label">
+                                    Gambar Utama <span class="required">*</span>
+                                </label>
+                                <p class="form-description">
+                                    Upload gambar utama berita. Format yang didukung: JPG, PNG, GIF, WebP. Maksimal 2MB.
+                                </p>
+                            </div>
+                            <div>
+                                <div class="image-upload" id="thumbnail-container">
+                                    <label for="thumbnail" class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span style="font-size: 0.9rem; font-weight: 500;">Klik untuk upload
+                                            gambar</span>
+                                        <small style="font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.8;">Format:
+                                            JPG, PNG, GIF, WebP (Max: 2MB)</small>
+                                    </label>
+
+                                    <input type="file" id="thumbnail" name="thumbnail" class="file-input-hidden"
+                                        accept="image/jpg,image/jpeg,image/png,image/gif,image/webp,image/heic"
+                                        onchange="previewThumbnail(this)" required>
+                                </div>
+                                @error('thumbnail')
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>{{ $message }}</span>
+                                    </div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-slide-up">
-                    <form action="{{ isset($news) ? route('admin.news.update', $news) : route('admin.news.store') }}" 
-                          method="POST" enctype="multipart/form-data" class="p-8" id="newsForm">
-                        @csrf
-                        @if(isset($news))
-                            @method('PUT')
-                        @endif
-
-                        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                            <!-- Main Content Area -->
-                            <div class="xl:col-span-3 space-y-8">
-                                <!-- Title Section -->
-                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-heading text-blue-500 mr-2"></i>
-                                        Informasi Utama
-                                    </h3>
-                                    
-                                    <!-- Title Input -->
-                                    <div class="floating-label mb-6">
-                                        <input type="text" name="title" 
-                                               value="{{ old('title', $news->title ?? '') }}"
-                                               placeholder="Masukkan judul berita yang menarik..."
-                                               class="form-input w-full px-4 py-3 rounded-xl bg-white focus:bg-white"
-                                               required>
-                                        <label class="text-gray-600 font-medium">Judul Berita</label>
-                                        @error('title')
-                                        <p class="mt-2 text-sm text-red-600 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            {{ $message }}
-                                        </p>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Excerpt Input -->
-                                    <div class="floating-label">
-                                        <textarea name="excerpt" rows="4" 
-                                                  placeholder="Tulis ringkasan singkat yang menggambarkan inti berita..."
-                                                  class="form-input w-full px-4 py-3 rounded-xl bg-white resize-none"
-                                                  required>{{ old('excerpt', $news->excerpt ?? '') }}</textarea>
-                                        <label class="text-gray-600 font-medium">Ringkasan Berita</label>
-                                        @error('excerpt')
-                                        <p class="mt-2 text-sm text-red-600 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            {{ $message }}
-                                        </p>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Enhanced Content Section with CKEditor -->
-                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-align-left text-green-500 mr-2"></i>
-                                        Konten Artikel
-                                    </h3>
-                                    
-                                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
-                                        <div class="flex items-start space-x-3">
-                                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
-                                            <div>
-                                                <h4 class="font-semibold text-blue-800 mb-1">Tips Menambahkan Gambar:</h4>
-                                                <ul class="text-sm text-blue-700 space-y-1">
-                                                    <li>• Gunakan tombol "Upload Gambar" di toolbar editor</li>
-                                                    <li>• Drag & drop gambar langsung ke editor</li>
-                                                    <li>• Copy paste gambar dari clipboard</li>
-                                                    <li>• Gambar akan disimpan di folder storage/imagesNews/</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- CKEditor Container -->
-                                    <div>
-                                        <textarea name="content" id="contentEditor" 
-                                                  style="display:none;">{{ old('content', $news->content ?? '') }}</textarea>
-                                        <div id="ckEditorContainer"></div>
-                                    </div>
-                                    
-                                    @error('content')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>
-                                        {{ $message }}
-                                    </p>
-                                    @enderror
-                                </div>
+                    <!-- Category Field -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="category" class="form-label">
+                                    Kategori <span class="required">*</span>
+                                </label>
+                                <p class="form-description">
+                                    Pilih kategori yang sesuai dengan topik berita.
+                                </p>
                             </div>
-
-                            <!-- Sidebar -->
-                            <div class="space-y-6">
-                                <!-- Image Upload -->
-                                <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                                    <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-image text-purple-500 mr-2"></i>
-                                        Gambar Utama
-                                    </h4>
-                                    
-                                    <div class="space-y-4">
-                                        <input type="file" name="image" accept="image/*"
-                                               class="form-input w-full px-4 py-3 rounded-xl border-dashed border-2 border-gray-300 hover:border-purple-400 transition-colors">
-                                        
-                                        @if(isset($news) && $news->image)
-                                        <div class="image-preview">
-                                            <img src="{{ asset('storage/' . $news->image) }}" 
-                                                 alt="Current image" 
-                                                 class="w-full h-40 object-cover rounded-xl border-2 border-gray-200">
-                                            <p class="text-xs text-gray-500 mt-2 text-center">Gambar saat ini</p>
-                                        </div>
-                                        @endif
-                                        
-                                        @error('image')
-                                        <p class="text-sm text-red-600 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            {{ $message }}
-                                        </p>
-                                        @enderror
+                            <div>
+                                <select id="category" name="category" class="form-control" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="Berita Umum" {{ old('category') == 'Berita Umum' ? 'selected' : '' }}>
+                                        Berita Umum</option>
+                                    <option value="Oil & Gas" {{ old('category') == 'Oil & Gas' ? 'selected' : '' }}>Oil &
+                                        Gas</option>
+                                    <option value="Teknologi" {{ old('category') == 'Teknologi' ? 'selected' : '' }}>
+                                        Teknologi</option>
+                                    <option value="Bisnis" {{ old('category') == 'Bisnis' ? 'selected' : '' }}>Bisnis
+                                    </option>
+                                    <option value="Lingkungan" {{ old('category') == 'Lingkungan' ? 'selected' : '' }}>
+                                        Lingkungan</option>
+                                    <option value="Pengumuman" {{ old('category') == 'Pengumuman' ? 'selected' : '' }}>
+                                        Pengumuman</option>
+                                    <option value="Kegiatan" {{ old('category') == 'Kegiatan' ? 'selected' : '' }}>
+                                        Kegiatan</option>
+                                    <option value="Press Release" {{ old('category') == 'Press Release' ? 'selected' : '' }}>Press Release</option>
+                                </select>
+                                @error('category')
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>{{ $message }}</span>
                                     </div>
-                                </div>
-
-                                <!-- Category Selection -->
-                                <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                                    <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-tags text-orange-500 mr-2"></i>
-                                        Kategori
-                                    </h4>
-                                    
-                                    <select name="category" 
-                                            class="form-input w-full px-4 py-3 rounded-xl"
-                                            required>
-                                        <option value="">Pilih Kategori</option>
-                                        @foreach(['politik', 'ekonomi', 'olahraga', 'teknologi', 'hiburan', 'kesehatan'] as $cat)
-                                        <option value="{{ $cat }}" 
-                                                {{ old('category', $news->category ?? '') === $cat ? 'selected' : '' }}>
-                                            {{ ucfirst($cat) }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                    
-                                    @error('category')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>
-                                        {{ $message }}
-                                    </p>
-                                    @enderror
-                                </div>
-
-                                <!-- Author Info -->
-                                <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                                    <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-user-edit text-teal-500 mr-2"></i>
-                                        Penulis
-                                    </h4>
-                                    
-                                    <input type="text" name="author" 
-                                           value="{{ old('author', $news->author ?? 'Admin BLJ') }}"
-                                           placeholder="Nama penulis"
-                                           class="form-input w-full px-4 py-3 rounded-xl"
-                                           required>
-                                    
-                                    @error('author')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>
-                                        {{ $message }}
-                                    </p>
-                                    @enderror
-                                </div>
-
-                                <!-- Publication Settings -->
-                                <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                                    <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-cog text-indigo-500 mr-2"></i>
-                                        Pengaturan Publikasi
-                                    </h4>
-                                    
-                                    <div class="space-y-4">
-                                        <!-- Status -->
-                                        <div>
-                                            <label class="text-sm font-medium text-gray-600 mb-2 block">Status</label>
-                                            <select name="status" 
-                                                    class="form-input w-full px-4 py-3 rounded-xl"
-                                                    required>
-                                                <option value="draft" {{ old('status', $news->status ?? '') === 'draft' ? 'selected' : '' }}>
-                                                    📝 Draft
-                                                </option>
-                                                <option value="published" {{ old('status', $news->status ?? '') === 'published' ? 'selected' : '' }}>
-                                                    🚀 Published
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Featured -->
-                                        <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                                            <label class="flex items-center cursor-pointer">
-                                                <input type="checkbox" name="featured" value="1" 
-                                                       {{ old('featured', $news->featured ?? false) ? 'checked' : '' }}
-                                                       class="mr-3 w-5 h-5 text-yellow-600 bg-yellow-100 border-yellow-300 rounded focus:ring-yellow-500">
-                                                <div>
-                                                    <span class="text-sm font-medium text-yellow-800">Berita Unggulan</span>
-                                                    <p class="text-xs text-yellow-600">Tampilkan di bagian utama website</p>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    @error('status')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>
-                                        {{ $message }}
-                                    </p>
-                                    @enderror
-                                </div>
+                                @enderror
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Action Buttons -->
-                        <div class="mt-12 pt-8 border-t border-gray-200">
-                            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-                                <a href="{{ route('admin.news.index') }}" 
-                                   class="btn-secondary px-8 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 text-center transition-all duration-300">
-                                    <i class="fas fa-times mr-2"></i>
-                                    Batal
-                                </a>
-                                <button type="submit" 
-                                        class="btn-primary px-8 py-3 text-white rounded-xl font-semibold animate-bounce-subtle">
-                                    <i class="fas fa-save mr-2"></i>
-                                    {{ isset($news) ? 'Update' : 'Simpan' }} Berita
-                                </button>
+                    <!-- Published Date Field -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="published_at" class="form-label">
+                                    Tanggal Publikasi <span class="required">*</span>
+                                </label>
+                                <p class="form-description">
+                                    Tentukan tanggal kapan berita ini akan dipublikasikan.
+                                </p>
+                            </div>
+                            <div>
+                                <input type="text" id="published_at" name="published_at" class="form-control"
+                                    placeholder="Pilih tanggal publikasi..." required value="{{ old('published_at') }}">
+                                @error('published_at')
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>{{ $message }}</span>
+                                    </div>
+                                @enderror
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Content Field -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="content" class="form-label">
+                                    Konten Berita <span class="required">*</span>
+                                </label>
+                                <p class="form-description">
+                                    Tulis konten berita lengkap dengan detail. Gunakan toolbar untuk format teks dan
+                                    upload gambar.
+                                </p>
+                            </div>
+                            <div>
+                                <div class="custom-editor">
+                                    <!-- Toolbar -->
+                                    <div class="editor-toolbar">
+                                        <button type="button" class="editor-btn" onclick="formatText('bold')"
+                                            title="Bold">
+                                            <i class="fas fa-bold"></i>
+                                        </button>
+                                        <button type="button" class="editor-btn" onclick="formatText('italic')"
+                                            title="Italic">
+                                            <i class="fas fa-italic"></i>
+                                        </button>
+                                        <button type="button" class="editor-btn" onclick="formatText('underline')"
+                                            title="Underline">
+                                            <i class="fas fa-underline"></i>
+                                        </button>
+                                        <div
+                                            style="width: 1px; height: 1.5rem; background: rgba(59, 130, 246, 0.2); margin: 0 0.25rem;">
+                                        </div>
+                                        <button type="button" class="editor-btn"
+                                            onclick="formatText('formatBlock', 'h2')" title="Heading 1">
+                                            H1
+                                        </button>
+                                        <button type="button" class="editor-btn"
+                                            onclick="formatText('formatBlock', 'h3')" title="Heading 2">
+                                            H2
+                                        </button>
+                                        <button type="button" class="editor-btn"
+                                            onclick="formatText('formatBlock', 'p')" title="Paragraph">
+                                            P
+                                        </button>
+                                        <div
+                                            style="width: 1px; height: 1.5rem; background: rgba(59, 130, 246, 0.2); margin: 0 0.25rem;">
+                                        </div>
+                                        <button type="button" class="editor-btn"
+                                            onclick="formatText('insertUnorderedList')" title="Bullet List">
+                                            <i class="fas fa-list-ul"></i>
+                                        </button>
+                                        <button type="button" class="editor-btn"
+                                            onclick="formatText('insertOrderedList')" title="Numbered List">
+                                            <i class="fas fa-list-ol"></i>
+                                        </button>
+                                        <div
+                                            style="width: 1px; height: 1.5rem; background: rgba(59, 130, 246, 0.2); margin: 0 0.25rem;">
+                                        </div>
+                                        <button type="button" class="editor-btn" onclick="uploadImage()"
+                                            title="Upload Image" id="upload-btn">
+                                            <i class="fas fa-image"></i>
+                                        </button>
+                                        <button type="button" class="editor-btn" onclick="insertLink()"
+                                            title="Insert Link">
+                                            <i class="fas fa-link"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Content Editable Area -->
+                                    <div id="editor-content" class="editor-content" contenteditable="true"
+                                        oninput="document.getElementById('content').value = this.innerHTML"></div>
+
+                                    <!-- Hidden file input for images -->
+                                    <input type="file" id="image-upload" class="file-input-hidden" accept="image/*"
+                                        onchange="handleImageUpload(this)">
+                                </div>
+
+                                <!-- Hidden input to store content -->
+                                <input type="hidden" id="content" name="content" value="{{ old('content', '') }}"
+                                    required>
+
+                                @error('content')
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>{{ $message }}</span>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ route('admin.news.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            <span>Batal</span>
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            <span>Simpan Berita</span>
+                        </button>
+                    </div>
+                </form>
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- Notification Container -->
-    <div id="notificationContainer"></div>
-
     <script>
-        let editorInstance;
+        // Simple vanilla JavaScript - no complications
+        let isUploading = false;
 
-        // Notification System
-        function showNotification(message, type = 'success') {
-            const container = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            container.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    container.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
-        // Custom Upload Adapter for CKEditor dengan path imagesNews
-        class CustomUploadAdapter {
-            constructor(loader) {
-                this.loader = loader;
-            }
-
-            upload() {
-                return this.loader.file
-                    .then(file => new Promise((resolve, reject) => {
-                        const formData = new FormData();
-                        formData.append('upload', file);
-                        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('POST', '/admin/news/upload-content-image', true);
-
-                        xhr.upload.addEventListener('progress', (e) => {
-                            if (e.lengthComputable) {
-                                const percentComplete = (e.loaded / e.total) * 100;
-                                console.log(`Upload progress: ${percentComplete}%`);
-                            }
-                        });
-
-                        xhr.addEventListener('load', () => {
-                            if (xhr.status === 200) {
-                                try {
-                                    const response = JSON.parse(xhr.responseText);
-                                    if (response.success) {
-                                        showNotification('Gambar berhasil diupload!', 'success');
-                                        resolve({
-                                            default: response.url
-                                        });
-                                    } else {
-                                        showNotification(response.message || 'Upload gagal', 'error');
-                                        reject(response.message || 'Upload gagal');
-                                    }
-                                } catch (e) {
-                                    showNotification('Terjadi kesalahan saat upload', 'error');
-                                    reject('Terjadi kesalahan saat upload');
-                                }
-                            } else {
-                                showNotification('Upload gagal', 'error');
-                                reject('Upload gagal');
-                            }
-                        });
-
-                        xhr.addEventListener('error', () => {
-                            showNotification('Koneksi error', 'error');
-                            reject('Koneksi error');
-                        });
-
-                        xhr.send(formData);
-                    }));
-            }
-
-            abort() {
-                if (this.xhr) {
-                    this.xhr.abort();
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Flatpickr
+            flatpickr("#published_at", {
+                dateFormat: "Y-m-d",
+                defaultDate: new Date(),
+                allowInput: true,
+                minDate: "today",
+                locale: {
+                    weekdays: {
+                        shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                        longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+                    },
+                    months: {
+                        shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                        longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+                    },
                 }
-            }
-        }
-
-        function CustomUploadAdapterPlugin(editor) {
-            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-                return new CustomUploadAdapter(loader);
-            };
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize CKEditor 5
-            ClassicEditor
-                .create(document.querySelector('#ckEditorContainer'), {
-                    extraPlugins: [CustomUploadAdapterPlugin],
-                    toolbar: {
-                        items: [
-                            'heading',
-                            '|',
-                            'bold',
-                            'italic',
-                            'underline',
-                            'link',
-                            '|',
-                            'bulletedList',
-                            'numberedList',
-                            '|',
-                            'outdent',
-                            'indent',
-                            '|',
-                            'imageUpload',
-                            'blockQuote',
-                            'insertTable',
-                            'mediaEmbed',
-                            '|',
-                            'undo',
-                            'redo',
-                            '|',
-                            'sourceEditing'
-                        ]
-                    },
-                    language: 'id',
-                    image: {
-                        toolbar: [
-                            'imageTextAlternative',
-                            'imageStyle:inline',
-                            'imageStyle:block',
-                            'imageStyle:side',
-                            'linkImage',
-                            'imageStyle:alignLeft',
-                            'imageStyle:alignCenter',
-                            'imageStyle:alignRight'
-                        ],
-                        styles: [
-                            'full',
-                            'side',
-                            'alignLeft',
-                            'alignCenter',
-                            'alignRight'
-                        ]
-                    },
-                    // Link configuration
-                    link: {
-                        decorators: {
-                            openInNewTab: {
-                                mode: 'manual',
-                                label: 'Open in a new tab',
-                                attributes: {
-                                    target: '_blank',
-                                    rel: 'noopener noreferrer'
-                                }
-                            }
-                        }
-                    },
-                    // Table configuration
-                    table: {
-                        contentToolbar: [
-                            'tableColumn',
-                            'tableRow',
-                            'mergeTableCells'
-                        ]
-                    },
-                    // Media embed configuration
-                    mediaEmbed: {
-                        previewsInData: true
-                    }
-                })
-                .then(editor => {
-                    editorInstance = editor;
-                    
-                    // Set initial content
-                    const initialContent = document.querySelector('#contentEditor').value;
-                    if (initialContent) {
-                        editor.setData(initialContent);
-                    }
-                    
-                    // Sync content with textarea on change
-                    editor.model.document.on('change:data', () => {
-                        document.querySelector('#contentEditor').value = editor.getData();
-                    });
-
-                    // Handle paste events for images
-                    editor.editing.view.document.on('paste', (evt, data) => {
-                        const items = Array.from(data.dataTransfer.items || []);
-                        const imageItems = items.filter(item => item.type.indexOf('image/') !== -1);
-                        
-                        if (imageItems.length > 0) {
-                            imageItems.forEach(item => {
-                                const file = item.getAsFile();
-                                if (file) {
-                                    // Upload melalui adapter yang sudah dikonfigurasi
-                                    editor.execute('imageUpload', { file: file });
-                                }
-                            });
-                        }
-                    });
-
-                    // Handle drag and drop
-                    editor.editing.view.document.on('drop', (evt, data) => {
-                        const files = Array.from(data.dataTransfer.files || []);
-                        const imageFiles = files.filter(file => file.type.indexOf('image/') !== -1);
-                        
-                        if (imageFiles.length > 0) {
-                            evt.preventDefault();
-                            imageFiles.forEach(file => {
-                                editor.execute('imageUpload', { file: file });
-                            });
-                        }
-                    });
-
-                    console.log('CKEditor berhasil diinisialisasi dengan upload adapter');
-                })
-                .catch(error => {
-                    console.error('Error initializing CKEditor:', error);
-                    showNotification('Gagal menginisialisasi editor', 'error');
-                });
-
-            // Auto-resize textareas
-            const textareas = document.querySelectorAll('textarea:not(#contentEditor)');
-            textareas.forEach(textarea => {
-                textarea.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = this.scrollHeight + 'px';
-                });
             });
 
-            // Image preview functionality for file upload
-            const imageInput = document.querySelector('input[name="image"]');
-            if (imageInput) {
-                imageInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            let preview = document.querySelector('.new-image-preview');
-                            if (!preview) {
-                                preview = document.createElement('div');
-                                preview.className = 'new-image-preview image-preview mt-4';
-                                preview.innerHTML = `
-                                    <img class="w-full h-40 object-cover rounded-xl border-2 border-gray-200" />
-                                    <p class="text-xs text-gray-500 mt-2 text-center">Preview gambar baru</p>
-                                `;
-                                imageInput.parentNode.appendChild(preview);
-                            }
-                            preview.querySelector('img').src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
+            // Set initial editor content from old input
+            const oldContent = '{{ old("content", "") }}';
+            if (oldContent) {
+                document.getElementById('editor-content').innerHTML = oldContent;
+                document.getElementById('content').value = oldContent;
             }
 
-            // Form validation and submission
-            const form = document.getElementById('newsForm');
-            form.addEventListener('submit', function(e) {
-                // Sync CKEditor content before submit
-                if (editorInstance) {
-                    document.querySelector('#contentEditor').value = editorInstance.getData();
-                }
-                
-                const button = form.querySelector('button[type="submit"]');
-                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
-                button.disabled = true;
-            });
+            // Page loading animation
+            document.body.classList.remove('loading');
         });
+
+        // Thumbnail preview function
+        function previewThumbnail(input) {
+            const file = input.files[0];
+            const container = input.closest('.image-upload');
+
+            if (file) {
+                // Validate file size
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                    input.value = '';
+                    return;
+                }
+
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/heic'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format file tidak didukung. Gunakan JPG, PNG, GIF, WebP, atau HEIC.');
+                    input.value = '';
+                    return;
+                }
+
+                // Create preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // Update label area with preview
+                    const labelArea = container.querySelector('.upload-placeholder');
+                    labelArea.innerHTML = `
+                        <div class="image-preview">
+                            <img src="${e.target.result}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                            <div class="image-overlay">
+                                <span class="change-image">Klik untuk ganti gambar</span>
+                            </div>
+                        </div>
+                    `;
+                    console.log('Thumbnail preview created, file input still exists:', !!document.getElementById('thumbnail'));
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Text formatting functions
+        function formatText(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('content').value = document.getElementById('editor-content').innerHTML;
+        }
+
+        // Upload image to content
+        function uploadImage() {
+            if (isUploading) return;
+            document.getElementById('image-upload').click();
+        }
+
+        // Handle image upload
+        async function handleImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran gambar terlalu besar. Maksimal 5MB.');
+                return;
+            }
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Format gambar tidak didukung. Gunakan JPG, PNG, GIF, atau WebP.');
+                return;
+            }
+
+            isUploading = true;
+            // Show loading state
+            const uploadBtn = document.getElementById('upload-btn');
+            const originalHTML = uploadBtn.innerHTML;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const formData = new FormData();
+                formData.append('upload', file);
+
+                const response = await fetch('/admin/news/upload-content-image', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.uploaded && result.url) {
+                    // Insert image into editor
+                    const img = `<img src="${result.url}" alt="Uploaded image" style="max-width: 100%; height: auto; border-radius: 8px; margin: 0.5rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">`;
+                    document.execCommand('insertHTML', false, img);
+                    document.getElementById('content').value = document.getElementById('editor-content').innerHTML;
+                } else {
+                    throw new Error(result.error?.message || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Gagal mengupload gambar: ' + error.message);
+            } finally {
+                isUploading = false;
+                uploadBtn.innerHTML = originalHTML;
+                input.value = ''; // Reset file input
+            }
+        }
+
+        // Insert link
+        function insertLink() {
+            const url = prompt('Masukkan URL link:');
+            if (url) {
+                const text = window.getSelection().toString() || url;
+                const link = `<a href="${url}" target="_blank" style="color: var(--primary-600); text-decoration: underline;">${text}</a>`;
+                document.execCommand('insertHTML', false, link);
+                document.getElementById('content').value = document.getElementById('editor-content').innerHTML;
+            }
+        }
+
+        // Sync content before form submit
+        function syncContentBeforeSubmit(form) {
+            const editorContent = document.getElementById('editor-content').innerHTML;
+            document.getElementById('content').value = editorContent;
+            console.log('Content synced before submit:', editorContent.length, 'characters');
+            return true; // Allow form to submit
+        }
+
+        console.log('✨ News Create Page loaded successfully!');
     </script>
 </body>
+
 </html>

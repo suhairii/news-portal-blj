@@ -1,4 +1,4 @@
-<!-- Fixed Dynamic Navbar with Improved Mobile Design -->
+<!-- Fixed Dynamic Navbar with Positioned Dropdown -->
 <nav class="glassmorphism-navbar" x-data="fixedNavbar()" x-init="init()">
     <div class="glass-container">
         <!-- Logo Section -->
@@ -24,7 +24,7 @@
             <!-- Beranda Link -->
             <a href="{{ route('landing') }}" class="nav-link" :class="{ 'nav-active': activeSection === 'home' }"
                 @click="handleNavClick({section: 'home', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event)"
-                @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()">
+                @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()" x-ref="link-home">
                 <div class="nav-glass-bg"></div>
                 <span class="nav-text">Beranda</span>
             </a>
@@ -36,17 +36,19 @@
                     class="nav-link nav-dropdown-trigger"
                     :class="{ 'nav-active': activeSection === 'about' || activeSection === 'divisi' }"
                     @click="handleNavClick({section: 'about', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event)"
-                    @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()">
+                    @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()"
+                    x-ref="link-about">
                     <div class="nav-glass-bg"></div>
                     <span class="nav-text">Tentang</span>
                     <i class="fas fa-chevron-down nav-dropdown-icon" :class="{ 'rotate-180': dropdownOpen }"></i>
                 </a>
 
-                <!-- Dropdown Menu -->
+                <!-- Dropdown Menu Tentang -->
                 <div x-show="dropdownOpen" x-transition:enter="dropdown-enter"
                     x-transition:enter-start="dropdown-enter-start" x-transition:enter-end="dropdown-enter-end"
                     x-transition:leave="dropdown-leave" x-transition:leave-start="dropdown-leave-start"
-                    x-transition:leave-end="dropdown-leave-end" class="nav-dropdown-menu">
+                    x-transition:leave-end="dropdown-leave-end" class="nav-dropdown-menu tentang-dropdown"
+                    @mouseenter="positionDropdown($el, $el.closest('.nav-dropdown-wrapper'))">
                     <a href="{{ $isLandingPage ? '#about' : route('landing') . '#about' }}" class="nav-dropdown-item"
                         @click="handleNavClick({section: 'about', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event)">
                         <i class="fas fa-eye nav-dropdown-item-icon"></i>
@@ -81,23 +83,25 @@
                 <span class="nav-text">Direktur</span>
             </a>
 
-            <!-- Artikel Dropdown (Previously CSR) -->
+            <!-- Artikel Dropdown -->
             <div class="nav-dropdown-wrapper" x-data="{ dropdownOpen: false }" @mouseenter="dropdownOpen = true"
                 @mouseleave="dropdownOpen = false">
                 <a href="#" class="nav-link nav-dropdown-trigger"
                     :class="{ 'nav-active': activeSection === 'artikel' || activeSection === 'berita' || activeSection === 'csr' }"
-                    @click.prevent="" @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()">
+                    @click.prevent="" @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()"
+                    x-ref="link-artikel">
                     <div class="nav-glass-bg"></div>
                     <span class="nav-text">Artikel</span>
                     <i class="fas fa-chevron-down nav-dropdown-icon" :class="{ 'rotate-180': dropdownOpen }"></i>
                 </a>
 
-                <!-- Dropdown Menu -->
+                <!-- Dropdown Menu Artikel -->
                 <div x-show="dropdownOpen" x-transition:enter="dropdown-enter"
                     x-transition:enter-start="dropdown-enter-start" x-transition:enter-end="dropdown-enter-end"
                     x-transition:leave="dropdown-leave" x-transition:leave-start="dropdown-leave-start"
-                    x-transition:leave-end="dropdown-leave-end" class="nav-dropdown-menu">
-                    <a href="#" class="nav-dropdown-item" @click.prevent="">
+                    x-transition:leave-end="dropdown-leave-end" class="nav-dropdown-menu artikel-dropdown"
+                    @mouseenter="positionDropdown($el, $el.closest('.nav-dropdown-wrapper'))">
+                    <a href="{{ route('berita') }}" class="nav-dropdown-item">
                         <i class="fas fa-newspaper nav-dropdown-item-icon"></i>
                         <div>
                             <span class="nav-dropdown-item-title">Artikel dan Berita</span>
@@ -121,7 +125,15 @@
                 <div class="nav-glass-bg"></div>
                 <span class="nav-text">Kantor</span>
             </a>
-
+            <!-- Kerjasama Link -->
+            <a href="{{ $isLandingPage ? '#partnership' : route('landing') . '#partnership' }}" class="nav-link"
+                :class="{ 'nav-active': activeSection === 'partnership' }"
+                @click="handleNavClick({section: 'partnership', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event)"
+                @mouseenter="updateMovingElements($el, true)" @mouseleave="resetMovingElements()"
+                x-ref="link-partnership">
+                <div class="nav-glass-bg"></div>
+                <span class="nav-text">Kerjasama</span>
+            </a>
             <!-- Kontak Link -->
             <a href="{{ $isLandingPage ? '#contact' : route('landing') . '#contact' }}" class="nav-link"
                 :class="{ 'nav-active': activeSection === 'contact' }"
@@ -136,7 +148,6 @@
         <div class="mobile-toggle">
             <button @click="toggleMobileMenu()" class="mobile-btn glass"
                 :class="{ 'mobile-btn-active': mobileMenuOpen }">
-                <div class="mobile-glass-bg"></div>
                 <div class="hamburger">
                     <span class="hamburger-line" :class="{ 'line-1-active': mobileMenuOpen }"></span>
                     <span class="hamburger-line" :class="{ 'line-2-active': mobileMenuOpen }"></span>
@@ -146,21 +157,18 @@
         </div>
     </div>
 
-    <!-- Mobile Menu -->
+    <!-- Simplified Mobile Menu -->
     <div x-show="mobileMenuOpen" x-transition:enter="mobile-enter" x-transition:enter-start="mobile-enter-start"
         x-transition:enter-end="mobile-enter-end" x-transition:leave="mobile-leave"
         x-transition:leave-start="mobile-leave-start" x-transition:leave-end="mobile-leave-end"
         class="mobile-menu glass-strong" @click.away="closeMobileMenu()">
 
-        <!-- Mobile Header with Logo -->
+        <!-- Mobile Header -->
         <div class="mobile-header">
-            <div class="mobile-logo">
-                <img src="{{ asset('assets/image/logoblj2.png') }}" alt="PT BLJ Logo" class="mobile-logo-image">
-                <div class="mobile-company-info">
-                    <span class="mobile-company-name">PT. Bumi Laksamana Jaya</span>
-                    <span class="mobile-company-tagline">Your Trusted Partner</span>
-                </div>
-            </div>
+            <div class="mobile-logo-text">PT. Bumi Laksamana Jaya</div>
+            <button @click="closeMobileMenu()" class="mobile-close-btn">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
         <!-- Mobile Navigation Links -->
@@ -169,18 +177,7 @@
             <a href="{{ route('landing') }}"
                 @click="handleMobileNavClick({section: 'home', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                 class="mobile-link" :class="{ 'mobile-active': activeSection === 'home' }">
-                <div class="mobile-link-content">
-                    <div class="mobile-link-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="mobile-link-text">
-                        <span class="mobile-text-primary">Beranda</span>
-                        <span class="mobile-text-secondary">Halaman Utama</span>
-                    </div>
-                    <div class="mobile-link-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
+                <span class="mobile-text">Beranda</span>
                 <div class="mobile-indicator" :class="{ 'mobile-indicator-show': activeSection === 'home' }"></div>
             </a>
 
@@ -188,19 +185,9 @@
             <div x-data="{ mobileDropdownOpen: false }" class="mobile-dropdown-container">
                 <button @click="mobileDropdownOpen = !mobileDropdownOpen" class="mobile-link mobile-dropdown-trigger"
                     :class="{ 'mobile-active': activeSection === 'about' || activeSection === 'divisi', 'mobile-dropdown-expanded': mobileDropdownOpen }">
-                    <div class="mobile-link-content">
-                        <div class="mobile-link-icon">
-                            <i class="fas fa-info-circle"></i>
-                        </div>
-                        <div class="mobile-link-text">
-                            <span class="mobile-text-primary">Tentang</span>
-                            <span class="mobile-text-secondary">Profil Perusahaan</span>
-                        </div>
-                        <div class="mobile-link-arrow">
-                            <i class="fas fa-chevron-down mobile-dropdown-icon"
-                                :class="{ 'rotate-180': mobileDropdownOpen }"></i>
-                        </div>
-                    </div>
+                    <span class="mobile-text">Tentang</span>
+                    <i class="fas fa-chevron-down mobile-dropdown-icon"
+                        :class="{ 'rotate-180': mobileDropdownOpen }"></i>
                     <div class="mobile-indicator"
                         :class="{ 'mobile-indicator-show': activeSection === 'about' || activeSection === 'divisi' }">
                     </div>
@@ -213,22 +200,10 @@
                     <a href="{{ $isLandingPage ? '#about' : route('landing') . '#about' }}"
                         @click="handleMobileNavClick({section: 'about', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                         class="mobile-submenu-item">
-                        <div class="mobile-submenu-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <div class="mobile-submenu-text">
-                            <span class="mobile-submenu-title">Visi & Misi</span>
-                            <span class="mobile-submenu-desc">Tujuan dan nilai perusahaan</span>
-                        </div>
+                        <span class="mobile-submenu-text">Visi & Misi</span>
                     </a>
                     <a href="{{ route('divisi') }}" @click="closeMobileMenu()" class="mobile-submenu-item">
-                        <div class="mobile-submenu-icon">
-                            <i class="fas fa-sitemap"></i>
-                        </div>
-                        <div class="mobile-submenu-text">
-                            <span class="mobile-submenu-title">Divisi Perusahaan</span>
-                            <span class="mobile-submenu-desc">Struktur organisasi</span>
-                        </div>
+                        <span class="mobile-submenu-text">Divisi Perusahaan</span>
                     </a>
                 </div>
             </div>
@@ -237,18 +212,7 @@
             <a href="{{ $isLandingPage ? '#business' : route('landing') . '#business' }}"
                 @click="handleMobileNavClick({section: 'business', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                 class="mobile-link" :class="{ 'mobile-active': activeSection === 'business' }">
-                <div class="mobile-link-content">
-                    <div class="mobile-link-icon">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <div class="mobile-link-text">
-                        <span class="mobile-text-primary">Unit Usaha</span>
-                        <span class="mobile-text-secondary">Bidang layanan kami</span>
-                    </div>
-                    <div class="mobile-link-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
+                <span class="mobile-text">Unit Usaha</span>
                 <div class="mobile-indicator" :class="{ 'mobile-indicator-show': activeSection === 'business' }"></div>
             </a>
 
@@ -256,39 +220,18 @@
             <a href="{{ $isLandingPage ? '#director' : route('landing') . '#director' }}"
                 @click="handleMobileNavClick({section: 'director', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                 class="mobile-link" :class="{ 'mobile-active': activeSection === 'director' }">
-                <div class="mobile-link-content">
-                    <div class="mobile-link-icon">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="mobile-link-text">
-                        <span class="mobile-text-primary">Direktur</span>
-                        <span class="mobile-text-secondary">Pimpinan perusahaan</span>
-                    </div>
-                    <div class="mobile-link-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
+                <span class="mobile-text">Direktur</span>
                 <div class="mobile-indicator" :class="{ 'mobile-indicator-show': activeSection === 'director' }"></div>
             </a>
 
-            <!-- Artikel Submenu (Previously CSR) -->
+            <!-- Artikel Submenu -->
             <div x-data="{ mobileArtikelDropdownOpen: false }" class="mobile-dropdown-container">
                 <button @click="mobileArtikelDropdownOpen = !mobileArtikelDropdownOpen"
                     class="mobile-link mobile-dropdown-trigger"
                     :class="{ 'mobile-active': activeSection === 'artikel' || activeSection === 'berita' || activeSection === 'csr', 'mobile-dropdown-expanded': mobileArtikelDropdownOpen }">
-                    <div class="mobile-link-content">
-                        <div class="mobile-link-icon">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        <div class="mobile-link-text">
-                            <span class="mobile-text-primary">Artikel</span>
-                            <span class="mobile-text-secondary">Berita dan informasi</span>
-                        </div>
-                        <div class="mobile-link-arrow">
-                            <i class="fas fa-chevron-down mobile-dropdown-icon"
-                                :class="{ 'rotate-180': mobileArtikelDropdownOpen }"></i>
-                        </div>
-                    </div>
+                    <span class="mobile-text">Artikel</span>
+                    <i class="fas fa-chevron-down mobile-dropdown-icon"
+                        :class="{ 'rotate-180': mobileArtikelDropdownOpen }"></i>
                     <div class="mobile-indicator"
                         :class="{ 'mobile-indicator-show': activeSection === 'artikel' || activeSection === 'berita' || activeSection === 'csr' }">
                     </div>
@@ -299,24 +242,12 @@
                     x-transition:leave="submenu-leave" x-transition:leave-start="submenu-leave-start"
                     x-transition:leave-end="submenu-leave-end" class="mobile-submenu">
                     <a href="#" @click.prevent="closeMobileMenu()" class="mobile-submenu-item">
-                        <div class="mobile-submenu-icon">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        <div class="mobile-submenu-text">
-                            <span class="mobile-submenu-title">Artikel dan Berita</span>
-                            <span class="mobile-submenu-desc">Informasi terkini perusahaan</span>
-                        </div>
+                        <span class="mobile-submenu-text">Artikel dan Berita</span>
                     </a>
                     <a href="{{ $isLandingPage ? '#csr' : route('landing') . '#csr' }}"
                         @click="handleMobileNavClick({section: 'csr', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                         class="mobile-submenu-item">
-                        <div class="mobile-submenu-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="mobile-submenu-text">
-                            <span class="mobile-submenu-title">CSR</span>
-                            <span class="mobile-submenu-desc">Tanggung jawab sosial</span>
-                        </div>
+                        <span class="mobile-submenu-text">CSR</span>
                     </a>
                 </div>
             </div>
@@ -325,47 +256,24 @@
             <a href="{{ $isLandingPage ? '#office' : route('landing') . '#office' }}"
                 @click="handleMobileNavClick({section: 'office', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                 class="mobile-link" :class="{ 'mobile-active': activeSection === 'office' }">
-                <div class="mobile-link-content">
-                    <div class="mobile-link-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="mobile-link-text">
-                        <span class="mobile-text-primary">Kantor</span>
-                        <span class="mobile-text-secondary">Lokasi kantor kami</span>
-                    </div>
-                    <div class="mobile-link-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
+                <span class="mobile-text">Kantor</span>
                 <div class="mobile-indicator" :class="{ 'mobile-indicator-show': activeSection === 'office' }"></div>
             </a>
-
+            <!-- Kerjasama -->
+            <a href="{{ $isLandingPage ? '#partnership' : route('landing') . '#partnership' }}"
+                @click="handleMobileNavClick({section: 'partnership', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
+                class="mobile-link" :class="{ 'mobile-active': activeSection === 'partnership' }">
+                <span class="mobile-text">Kerjasama</span>
+                <div class="mobile-indicator" :class="{ 'mobile-indicator-show': activeSection === 'partnership' }">
+                </div>
+            </a>
             <!-- Kontak -->
             <a href="{{ $isLandingPage ? '#contact' : route('landing') . '#contact' }}"
                 @click="handleMobileNavClick({section: 'contact', isExternal: {{ $isLandingPage ? 'false' : 'true' }}}, $event); closeMobileMenu()"
                 class="mobile-link" :class="{ 'mobile-active': activeSection === 'contact' }">
-                <div class="mobile-link-content">
-                    <div class="mobile-link-icon">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div class="mobile-link-text">
-                        <span class="mobile-text-primary">Kontak</span>
-                        <span class="mobile-text-secondary">Hubungi kami</span>
-                    </div>
-                    <div class="mobile-link-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
+                <span class="mobile-text">Kontak</span>
                 <div class="mobile-indicator" :class="{ 'mobile-indicator-show': activeSection === 'contact' }"></div>
             </a>
-        </div>
-
-        <!-- Mobile Footer -->
-        <div class="mobile-footer">
-            <div class="mobile-footer-text">
-                <span>© 2024 PT. Bumi Laksamana Jaya</span>
-                <span>All rights reserved</span>
-            </div>
         </div>
     </div>
 
@@ -394,7 +302,7 @@
         --gray-300: #d1d5db;
         --gray-400: #9ca3af;
         --gray-500: #6b7280;
-        --Gray-600: #4b5563;
+        --gray-600: #4b5563;
         --gray-700: #374151;
         --gray-800: #1f2937;
         --gray-900: #111827;
@@ -406,11 +314,10 @@
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 1000;
+        z-index: 99999 !important;
         max-width: calc(100vw - 40px);
         width: auto;
         padding: 0 20px;
-        overflow: visible !important;
     }
 
     .glass-container {
@@ -462,13 +369,6 @@
         height: 100%;
         object-fit: contain;
         border-radius: 50%;
-    }
-
-    .logo-text {
-        font-weight: 800;
-        font-size: 1.1rem;
-        color: white;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .company-info {
@@ -553,42 +453,6 @@
         color: var(--primary-600);
     }
 
-    /* CTA BUTTON */
-    .navbar-cta {
-        display: flex;
-        align-items: center;
-    }
-
-    .cta-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        color: white;
-        text-decoration: none;
-        border-radius: 16px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        box-shadow:
-            0 8px 25px rgba(59, 130, 246, 0.3),
-            0 4px 15px rgba(59, 130, 246, 0.2);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .cta-btn:hover {
-        transform: translateY(-2px);
-        box-shadow:
-            0 12px 35px rgba(59, 130, 246, 0.4),
-            0 6px 20px rgba(59, 130, 246, 0.3);
-    }
-
-    .cta-icon svg {
-        width: 18px;
-        height: 18px;
-    }
-
     /* MOBILE TOGGLE */
     .mobile-toggle {
         display: none;
@@ -643,82 +507,78 @@
 
     /* MOBILE MENU */
     .mobile-menu {
-        position: fixed;
-        top: 0;
-        right: 0;
+        position: fixed !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         height: 100vh;
-        width: 90%;
-        max-width: 400px;
+        width: calc(100vw - 40px);
+        max-width: 420px;
         background: rgba(255, 255, 255, 0.98);
         backdrop-filter: blur(40px);
         -webkit-backdrop-filter: blur(40px);
-        border-left: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: -20px 0 60px rgba(0, 0, 0, 0.15);
-        z-index: 1001;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 20px;
+        box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
+        z-index: 100001 !important;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
     }
 
-    /* MOBILE HEADER */
     .mobile-header {
-        padding: 2rem 1.5rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.05));
     }
 
-    .mobile-logo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .mobile-logo-image {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: contain;
-        border: 3px solid rgba(59, 130, 246, 0.2);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-    }
-
-    .mobile-company-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .mobile-company-name {
+    .mobile-logo-text {
         font-weight: 800;
         font-size: 1.1rem;
         color: var(--gray-800);
         line-height: 1.2;
     }
 
-    .mobile-company-tagline {
-        font-size: 0.85rem;
-        color: var(--primary-600);
-        font-weight: 600;
+    .mobile-close-btn {
+        width: 36px;
+        height: 36px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 8px;
+        color: var(--gray-600);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
     }
 
-    /* MOBILE NAVIGATION */
+    .mobile-close-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #dc2626;
+        transform: scale(1.05);
+    }
+
     .mobile-nav {
         flex: 1;
         padding: 1rem 0;
-        overflow-y: auto;
     }
 
     .mobile-link {
         position: relative;
-        display: block;
-        margin: 0.5rem 1.5rem;
-        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.25rem 1rem;
+        padding: 1rem 1.5rem;
         text-decoration: none;
-        border-radius: 16px;
-        overflow: hidden;
+        border-radius: 12px;
         transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         backdrop-filter: blur(20px);
     }
 
@@ -726,83 +586,30 @@
     .mobile-link.mobile-active {
         background: rgba(59, 130, 246, 0.08);
         border-color: rgba(59, 130, 246, 0.2);
-        transform: translateY(-1px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
+        transform: translateX(3px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
     }
 
-    .mobile-link-content {
-        display: flex;
-        align-items: center;
-        padding: 1.25rem 1.5rem;
-        gap: 1rem;
-    }
-
-    .mobile-link-icon {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(59, 130, 246, 0.15);
-        flex-shrink: 0;
-    }
-
-    .mobile-link-icon i {
-        font-size: 1.1rem;
-        color: var(--primary-600);
-    }
-
-    .mobile-link-text {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .mobile-text-primary {
-        font-weight: 700;
-        font-size: 1rem;
+    .mobile-text {
+        font-weight: 600;
+        font-size: 0.95rem;
         color: var(--gray-800);
-        line-height: 1.2;
+        transition: color 0.3s ease;
     }
 
-    .mobile-text-secondary {
-        font-size: 0.8rem;
-        color: var(--gray-600);
-        line-height: 1.3;
-    }
-
-    .mobile-link-arrow {
-        flex-shrink: 0;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .mobile-link-arrow i {
-        font-size: 0.8rem;
-        color: var(--gray-400);
-        transition: all 0.3s ease;
-    }
-
-    .mobile-link:hover .mobile-link-arrow i,
-    .mobile-link.mobile-active .mobile-link-arrow i {
+    .mobile-link:hover .mobile-text,
+    .mobile-link.mobile-active .mobile-text {
         color: var(--primary-600);
-        transform: translateX(2px);
     }
 
     .mobile-indicator {
         position: absolute;
         left: 0;
         top: 0;
-        width: 4px;
+        width: 3px;
         height: 100%;
         background: linear-gradient(180deg, var(--primary-500), var(--primary-600));
-        border-radius: 0 4px 4px 0;
+        border-radius: 0 3px 3px 0;
         opacity: 0;
         transform: scaleY(0);
         transition: all 0.3s ease;
@@ -813,15 +620,14 @@
         transform: scaleY(1);
     }
 
-    /* MOBILE DROPDOWN */
     .mobile-dropdown-container {
-        margin: 0.5rem 1.5rem;
+        margin: 0.25rem 1rem;
     }
 
     .mobile-dropdown-trigger {
-        background: rgba(255, 255, 255, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 12px;
         margin: 0;
         width: 100%;
         text-align: left;
@@ -836,178 +642,47 @@
     }
 
     .mobile-dropdown-icon {
-        transition: transform 0.3s ease;
+        font-size: 0.8rem;
+        color: var(--gray-400);
+        transition: all 0.3s ease;
     }
 
     .mobile-submenu {
-        margin-top: 0.75rem;
-        padding: 0 1rem;
-        border-left: 3px solid rgba(59, 130, 246, 0.2);
+        margin-top: 0.5rem;
+        padding: 0 0.75rem;
+        border-left: 2px solid rgba(59, 130, 246, 0.2);
         background: rgba(59, 130, 246, 0.02);
-        border-radius: 0 12px 12px 0;
+        border-radius: 0 10px 10px 0;
     }
 
     .mobile-submenu-item {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        margin: 0.5rem 0;
+        display: block;
+        padding: 0.875rem 1.25rem;
+        margin: 0.3rem 0;
         text-decoration: none;
-        border-radius: 12px;
+        border-radius: 10px;
         transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        gap: 1rem;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
     .mobile-submenu-item:hover {
         background: rgba(59, 130, 246, 0.05);
         border-color: rgba(59, 130, 246, 0.15);
-        transform: translateX(4px);
-    }
-
-    .mobile-submenu-icon {
-        width: 36px;
-        height: 36px;
-        background: rgba(59, 130, 246, 0.1);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .mobile-submenu-icon i {
-        font-size: 0.9rem;
-        color: var(--primary-600);
+        transform: translateX(3px);
     }
 
     .mobile-submenu-text {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.2rem;
-    }
-
-    .mobile-submenu-title {
         font-weight: 600;
         font-size: 0.9rem;
         color: var(--gray-800);
+        transition: color 0.3s ease;
     }
 
-    .mobile-submenu-desc {
-        font-size: 0.75rem;
-        color: var(--gray-600);
+    .mobile-submenu-item:hover .mobile-submenu-text {
+        color: var(--primary-600);
     }
 
-    /* MOBILE CTA */
-    .mobile-cta {
-        padding: 1.5rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .mobile-cta-btn {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: 1.5rem;
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        border-radius: 20px;
-        text-decoration: none;
-        color: white;
-        box-shadow:
-            0 12px 35px rgba(59, 130, 246, 0.3),
-            0 6px 20px rgba(59, 130, 246, 0.2);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .mobile-cta-btn:hover {
-        transform: translateY(-2px);
-        box-shadow:
-            0 16px 45px rgba(59, 130, 246, 0.4),
-            0 8px 25px rgba(59, 130, 246, 0.3);
-    }
-
-    .mobile-cta-content {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .mobile-cta-icon {
-        width: 48px;
-        height: 48px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .mobile-cta-icon i {
-        font-size: 1.1rem;
-        color: white;
-    }
-
-    .mobile-cta-text {
-        display: flex;
-        flex-direction: column;
-        gap: 0.2rem;
-    }
-
-    .mobile-cta-title {
-        font-weight: 700;
-        font-size: 1.1rem;
-        line-height: 1.2;
-    }
-
-    .mobile-cta-subtitle {
-        font-size: 0.8rem;
-        opacity: 0.9;
-    }
-
-    .mobile-cta-arrow {
-        width: 32px;
-        height: 32px;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    .mobile-cta-btn:hover .mobile-cta-arrow {
-        transform: translateX(4px);
-    }
-
-    .mobile-cta-arrow i {
-        font-size: 0.9rem;
-        color: white;
-    }
-
-    /* MOBILE FOOTER */
-    .mobile-footer {
-        padding: 1.5rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        background: rgba(0, 0, 0, 0.02);
-    }
-
-    .mobile-footer-text {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--gray-500);
-        text-align: center;
-    }
-
-    /* MOBILE BACKDROP */
     .mobile-backdrop {
         position: fixed;
         top: 0;
@@ -1016,13 +691,13 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(4px);
-        z-index: 1000;
+        z-index: 100000;
     }
 
-    /* DROPDOWN STYLES (keeping original desktop dropdown) */
+    /* DROPDOWN STYLES (Desktop) - POSITIONED */
     .nav-dropdown-wrapper {
         position: relative;
-        z-index: 1010;
+        z-index: 100010 !important;
     }
 
     .nav-dropdown-trigger {
@@ -1040,26 +715,29 @@
         transform: rotate(180deg);
     }
 
+    /* DROPDOWN MENU - POSITIONED RELATIVE TO TRIGGER */
     .nav-dropdown-menu {
-        position: absolute;
-        top: calc(100% + 15px);
-        left: 50%;
-        transform: translateX(-50%);
+        position: absolute !important;
+        top: calc(100% + 15px) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         min-width: 300px;
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(255, 255, 255, 0.98) !important;
         backdrop-filter: blur(40px);
         -webkit-backdrop-filter: blur(40px);
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 24px;
         box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.2),
-            0 8px 40px rgba(0, 0, 0, 0.15),
+            0 20px 60px rgba(0, 0, 0, 0.3),
+            0 8px 40px rgba(0, 0, 0, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.8);
         padding: 1.5rem;
-        z-index: 1020;
-        overflow: visible;
+        z-index: 100011 !important;
+        overflow: visible !important;
+        pointer-events: all !important;
     }
 
+    /* ARROW/TRIANGLE FOR DROPDOWN */
     .nav-dropdown-menu::before {
         content: '';
         position: absolute;
@@ -1070,8 +748,9 @@
         height: 0;
         border-left: 8px solid transparent;
         border-right: 8px solid transparent;
-        border-bottom: 8px solid rgba(255, 255, 255, 0.95);
+        border-bottom: 8px solid rgba(255, 255, 255, 0.98);
         filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+        z-index: 100012;
     }
 
     .nav-dropdown-item {
@@ -1084,8 +763,8 @@
         color: var(--gray-700);
         transition: all 0.3s ease;
         margin-bottom: 0.75rem;
-        background: rgba(255, 255, 255, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     .nav-dropdown-item:last-child {
@@ -1093,11 +772,11 @@
     }
 
     .nav-dropdown-item:hover {
-        background: rgba(59, 130, 246, 0.15);
+        background: rgba(59, 130, 246, 0.2);
         color: var(--primary-600);
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
-        border-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.4);
     }
 
     .nav-dropdown-item-icon {
@@ -1118,27 +797,31 @@
 
     /* TRANSITIONS */
     .mobile-enter {
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .mobile-enter-start {
-        transform: translateX(100%);
+        opacity: 0;
+        transform: translateX(-50%) scale(0.95);
     }
 
     .mobile-enter-end {
-        transform: translateX(0);
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
     }
 
     .mobile-leave {
-        transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .mobile-leave-start {
-        transform: translateX(0);
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
     }
 
     .mobile-leave-end {
-        transform: translateX(100%);
+        opacity: 0;
+        transform: translateX(-50%) scale(0.95);
     }
 
     .backdrop-enter {
@@ -1166,13 +849,13 @@
     }
 
     .dropdown-enter {
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .dropdown-enter-start {
         opacity: 0;
-        transform: translateX(-50%) translateY(-15px) scale(0.95);
-        filter: blur(4px);
+        transform: translateX(-50%) translateY(-10px) scale(0.98);
+        filter: blur(2px);
     }
 
     .dropdown-enter-end {
@@ -1182,7 +865,7 @@
     }
 
     .dropdown-leave {
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .dropdown-leave-start {
@@ -1193,8 +876,8 @@
 
     .dropdown-leave-end {
         opacity: 0;
-        transform: translateX(-50%) translateY(-15px) scale(0.95);
-        filter: blur(4px);
+        transform: translateX(-50%) translateY(-10px) scale(0.98);
+        filter: blur(2px);
     }
 
     .submenu-enter {
@@ -1210,7 +893,7 @@
     .submenu-enter-end {
         opacity: 1;
         transform: translateY(0);
-        max-height: 300px;
+        max-height: 200px;
     }
 
     .submenu-leave {
@@ -1220,7 +903,7 @@
     .submenu-leave-start {
         opacity: 1;
         transform: translateY(0);
-        max-height: 300px;
+        max-height: 200px;
     }
 
     .submenu-leave-end {
@@ -1231,9 +914,7 @@
 
     /* RESPONSIVE BREAKPOINTS */
     @media (max-width: 1024px) {
-
-        .desktop-nav,
-        .navbar-cta {
+        .desktop-nav {
             display: none;
         }
 
@@ -1274,46 +955,24 @@
         }
 
         .mobile-menu {
-            width: 95%;
+            width: calc(100vw - 30px);
         }
 
         .mobile-header {
-            padding: 1.5rem 1.25rem 1.25rem;
+            padding: 1.25rem;
         }
 
-        .mobile-logo-image {
-            width: 50px;
-            height: 50px;
-        }
-
-        .mobile-company-name {
+        .mobile-logo-text {
             font-size: 1rem;
         }
 
         .mobile-link {
-            margin: 0.4rem 1.25rem;
+            margin: 0.2rem 0.75rem;
+            padding: 0.875rem 1.25rem;
         }
 
-        .mobile-link-content {
-            padding: 1rem 1.25rem;
-        }
-
-        .mobile-link-icon {
-            width: 42px;
-            height: 42px;
-        }
-
-        .mobile-cta {
-            padding: 1.25rem;
-        }
-
-        .mobile-cta-btn {
-            padding: 1.25rem;
-        }
-
-        .mobile-cta-icon {
-            width: 42px;
-            height: 42px;
+        .mobile-text {
+            font-size: 0.9rem;
         }
     }
 
@@ -1338,31 +997,38 @@
         }
 
         .mobile-menu {
-            width: 100%;
+            width: calc(100vw - 20px);
         }
 
-        .mobile-link-content {
-            padding: 0.875rem 1rem;
-            gap: 0.75rem;
+        .mobile-header {
+            padding: 1rem;
         }
 
-        .mobile-link-icon {
-            width: 38px;
-            height: 38px;
-        }
-
-        .mobile-text-primary {
+        .mobile-logo-text {
             font-size: 0.95rem;
         }
 
-        .mobile-text-secondary {
-            font-size: 0.75rem;
+        .mobile-link {
+            margin: 0.15rem 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .mobile-text {
+            font-size: 0.85rem;
+        }
+
+        .mobile-submenu-item {
+            padding: 0.75rem 1rem;
+        }
+
+        .mobile-submenu-text {
+            font-size: 0.85rem;
         }
     }
 </style>
 
 <script>
-    // Fixed Navbar Alpine.js Component Script
+    // Fixed Navbar Alpine.js Component Script - WITH POSITIONED DROPDOWN
     function fixedNavbar() {
         return {
             mobileMenuOpen: false,
@@ -1374,7 +1040,7 @@
                     this.setupIntersectionObserver();
                 }
                 this.setupMovingElements();
-                console.log('🛢️ PT BLJ Navbar with Improved Mobile Design initialized');
+                console.log('🛢️ PT BLJ Navbar with Positioned Dropdown initialized');
             },
 
             toggleMobileMenu() {
@@ -1455,21 +1121,24 @@
                 this.updateMovingElementsForActiveSection();
             },
 
+            // FUNCTION UNTUK NAVBAR CLICK
             handleNavClick(link, event) {
                 if (this.isLandingPage && !link.isExternal) {
                     event.preventDefault();
-                    this.smoothScrollToSection(link.section, event);
+                    this.smoothScrollToSection(link.section);
+                    this.setActiveSection(link.section);
                 }
             },
 
             handleMobileNavClick(link, event) {
                 if (this.isLandingPage && !link.isExternal) {
                     event.preventDefault();
-                    this.smoothScrollToSection(link.section, event);
+                    this.smoothScrollToSection(link.section);
+                    this.setActiveSection(link.section);
                 }
             },
 
-            smoothScrollToSection(sectionId, event) {
+            smoothScrollToSection(sectionId) {
                 if (!this.isLandingPage) return;
 
                 const target = document.getElementById(sectionId);
@@ -1480,7 +1149,7 @@
                     const duration = Math.abs(distance) > 1000 ? 1200 : 800;
                     let startTime = null;
 
-                    function animation(currentTime) {
+                    const animation = (currentTime) => {
                         if (startTime === null) startTime = currentTime;
                         const timeElapsed = currentTime - startTime;
                         const progress = Math.min(timeElapsed / duration, 1);
@@ -1496,10 +1165,18 @@
                         } else {
                             window.scrollTo(0, Math.max(0, offsetTop));
                         }
-                    }
+                    };
 
                     requestAnimationFrame(animation);
                 }
+            },
+
+            // FUNCTION UNTUK POSITIONING DROPDOWN - OTOMATIS BERDASARKAN TRIGGER
+            positionDropdown(dropdownEl, wrapperEl) {
+                // Function ini dipanggil otomatis oleh Alpine.js
+                // Dropdown sudah diposisikan dengan CSS relative ke wrapper
+                // Tidak perlu JavaScript tambahan karena menggunakan position: absolute
+                return;
             }
         }
     }

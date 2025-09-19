@@ -4,24 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $category }} - PT. Bumi Laksamana Jaya</title>
-    <meta name="description" content="Artikel dan berita kategori {{ $category }} dari PT. Bumi Laksamana Jaya">
+    <title>Pencarian: {{ $query }} - PT. Bumi Laksamana Jaya</title>
+    <meta name="description" content="Hasil pencarian untuk '{{ $query }}' di website PT. Bumi Laksamana Jaya">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
+
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         :root {
-            /* Same CSS variables as other pages */
+            /* Same CSS variables as news index */
             --primary-50: #eff6ff;
             --primary-100: #dbeafe;
             --primary-200: #bfdbfe;
@@ -53,7 +54,6 @@
             --bg-light: #fefefe;
         }
 
-        /* All the same styles as search page */
         * {
             margin: 0;
             padding: 0;
@@ -72,7 +72,7 @@
             line-height: 1.6;
         }
 
-        /* Background Elements */
+        /* Background Elements - Same as other pages */
         .oil-bg {
             position: fixed;
             top: 0;
@@ -117,21 +117,86 @@
             filter: blur(1px);
         }
 
-        .oil-droplet:nth-child(1) { width: 20px; height: 25px; left: 5%; animation-delay: 0s; animation-duration: 10s; }
-        .oil-droplet:nth-child(2) { width: 15px; height: 20px; left: 15%; animation-delay: 2s; animation-duration: 12s; }
-        .oil-droplet:nth-child(3) { width: 25px; height: 30px; left: 25%; animation-delay: 4s; animation-duration: 11s; }
-        .oil-droplet:nth-child(4) { width: 18px; height: 22px; left: 35%; animation-delay: 1s; animation-duration: 13s; }
-        .oil-droplet:nth-child(5) { width: 22px; height: 28px; left: 45%; animation-delay: 3s; animation-duration: 9s; }
-        .oil-droplet:nth-child(6) { width: 16px; height: 20px; left: 55%; animation-delay: 5s; animation-duration: 14s; }
+        .oil-droplet:nth-child(1) {
+            width: 20px;
+            height: 25px;
+            left: 5%;
+            animation-delay: 0s;
+            animation-duration: 10s;
+        }
+
+        .oil-droplet:nth-child(2) {
+            width: 15px;
+            height: 20px;
+            left: 15%;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+
+        .oil-droplet:nth-child(3) {
+            width: 25px;
+            height: 30px;
+            left: 25%;
+            animation-delay: 4s;
+            animation-duration: 11s;
+        }
+
+        .oil-droplet:nth-child(4) {
+            width: 18px;
+            height: 22px;
+            left: 35%;
+            animation-delay: 1s;
+            animation-duration: 13s;
+        }
+
+        .oil-droplet:nth-child(5) {
+            width: 22px;
+            height: 28px;
+            left: 45%;
+            animation-delay: 3s;
+            animation-duration: 9s;
+        }
+
+        .oil-droplet:nth-child(6) {
+            width: 16px;
+            height: 20px;
+            left: 55%;
+            animation-delay: 5s;
+            animation-duration: 14s;
+        }
 
         @keyframes floatOil {
-            0% { transform: translateY(100vh) translateX(0px) rotate(0deg) scale(0); opacity: 0; }
-            10% { opacity: 0.1; transform: translateY(90vh) translateX(20px) rotate(20deg) scale(1); }
-            25% { transform: translateY(75vh) translateX(-30px) rotate(45deg) scale(1.1); }
-            50% { transform: translateY(50vh) translateX(40px) rotate(90deg) scale(0.9); }
-            75% { transform: translateY(25vh) translateX(-20px) rotate(135deg) scale(1.2); }
-            90% { opacity: 0.1; transform: translateY(10vh) translateX(10px) rotate(160deg) scale(0.8); }
-            100% { transform: translateY(-10vh) translateX(0px) rotate(180deg) scale(0); opacity: 0; }
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.1;
+                transform: translateY(90vh) translateX(20px) rotate(20deg) scale(1);
+            }
+
+            25% {
+                transform: translateY(75vh) translateX(-30px) rotate(45deg) scale(1.1);
+            }
+
+            50% {
+                transform: translateY(50vh) translateX(40px) rotate(90deg) scale(0.9);
+            }
+
+            75% {
+                transform: translateY(25vh) translateX(-20px) rotate(135deg) scale(1.2);
+            }
+
+            90% {
+                opacity: 0.1;
+                transform: translateY(10vh) translateX(10px) rotate(160deg) scale(0.8);
+            }
+
+            100% {
+                transform: translateY(-10vh) translateX(0px) rotate(180deg) scale(0);
+                opacity: 0;
+            }
         }
 
         .oil-rig-bg {
@@ -169,13 +234,13 @@
             min-height: 100vh;
         }
 
-        /* Category Header */
-        .category-header {
+        /* Search Header */
+        .search-header {
             text-align: center;
             margin-bottom: 3rem;
         }
 
-        .category-badge {
+        .search-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -189,67 +254,60 @@
             border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
-        .category-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
+        .search-title {
+            font-size: clamp(2rem, 4vw, 3rem);
             font-weight: 800;
             margin-bottom: 1rem;
             color: var(--gray-900);
         }
 
-        .category-title .accent-text {
+        .search-title .query-text {
             color: var(--primary-600);
         }
 
-        .category-description {
-            font-size: 1.25rem;
+        .search-subtitle {
+            font-size: 1.1rem;
             color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        /* Search Box */
+        .search-box-container {
             max-width: 600px;
-            margin: 0 auto 2rem;
+            margin: 0 auto 3rem;
+            position: relative;
         }
 
-        /* Category Navigation */
-        .category-nav {
-            margin-bottom: 3rem;
-        }
-
-        .category-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.75rem;
-        }
-
-        .category-btn {
-            padding: 0.75rem 1.5rem;
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 1.25rem 1.25rem 3.5rem;
             border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.8);
-            color: var(--gray-700);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--gray-700);
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .category-btn:hover, .category-btn.active {
-            background: var(--primary-500);
-            color: white;
+        .search-input:focus {
+            outline: none;
             border-color: var(--primary-500);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        /* Category Icon Mapping */
-        .category-icon {
-            font-size: 1rem;
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 1.2rem;
         }
 
-        /* Results Info */
+        /* Results Section */
         .results-info {
             margin-bottom: 2rem;
             padding: 1.5rem;
@@ -263,7 +321,7 @@
             color: var(--primary-600);
         }
 
-        /* News Grid - Same as other pages */
+        /* News Grid - Same as index */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -392,7 +450,32 @@
             margin-bottom: 2rem;
         }
 
-        /* Pagination */
+        .empty-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .suggestion-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-600);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-btn:hover {
+            background: var(--primary-500);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Pagination - Same as index */
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -405,7 +488,8 @@
             gap: 0.5rem;
         }
 
-        .pagination a, .pagination span {
+        .pagination a,
+        .pagination span {
             padding: 0.75rem 1rem;
             border-radius: 12px;
             text-decoration: none;
@@ -446,7 +530,9 @@
         }
 
         @keyframes fadeIn {
-            to { opacity: 1; }
+            to {
+                opacity: 1;
+            }
         }
 
         /* Responsive Design */
@@ -469,19 +555,20 @@
                 min-height: 420px;
             }
 
-            .category-buttons {
-                gap: 0.5rem;
+            .search-input {
+                font-size: 1rem;
+                padding: 1rem 1rem 1rem 3rem;
             }
 
-            .category-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
+            .empty-suggestions {
+                flex-direction: column;
+                align-items: center;
             }
         }
 
         @media (max-width: 480px) {
-            .category-title {
-                font-size: 2rem;
+            .search-title {
+                font-size: 1.8rem;
             }
 
             .news-card {
@@ -490,16 +577,6 @@
 
             .news-content {
                 padding: 1.25rem;
-            }
-
-            .category-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .category-btn {
-                width: 200px;
-                justify-content: center;
             }
         }
     </style>
@@ -525,114 +602,101 @@
     <main class="main">
         <section class="section">
             <div class="container">
-                <!-- Category Header -->
-                <div class="category-header" data-aos="fade-up">
-                    <div class="category-badge">
-                        <i class="fas fa-folder-open"></i>
-                        <span>Kategori</span>
+                <!-- Search Header -->
+                <div class="search-header" data-aos="fade-up">
+                    <div class="search-badge">
+                        <i class="fas fa-search"></i>
+                        <span>Hasil Pencarian</span>
                     </div>
-                    <h1 class="category-title">
-                        <span class="accent-text">{{ $category }}</span>
+                    <h1 class="search-title">
+                        Hasil untuk "<span class="query-text">{{ $query }}</span>"
                     </h1>
-                    <p class="category-description">
-                        Kumpulan artikel dan berita terbaru dalam kategori {{ $category }} dari PT. Bumi Laksamana Jaya
+                    <p class="search-subtitle">
+                        Menampilkan artikel dan berita yang relevan dengan pencarian Anda
                     </p>
                 </div>
 
-                <!-- Category Navigation -->
-                <div class="category-nav glass-light" data-aos="fade-up" data-aos-delay="100">
-                    <div style="padding: 2rem;">
-                        <div class="category-buttons">
-                            <a href="{{ route('berita') }}" class="category-btn">
-                                <i class="fas fa-th-large category-icon"></i>
-                                <span>Semua</span>
-                            </a>
-                            @php
-                                $categoryIcons = [
-                                    'Berita Umum' => 'fas fa-newspaper',
-                                    'Oil & Gas' => 'fas fa-oil-can',
-                                    'Teknologi' => 'fas fa-microchip',
-                                    'Bisnis' => 'fas fa-briefcase',
-                                    'Lingkungan' => 'fas fa-leaf',
-                                    'Pengumuman' => 'fas fa-bullhorn',
-                                    'Kegiatan' => 'fas fa-calendar-check',
-                                    'Press Release' => 'fas fa-file-alt'
-                                ];
-                            @endphp
-                            @foreach(\App\Models\News::getCategories() as $cat)
-                                <a href="{{ route('news.category', $cat) }}" class="category-btn {{ $cat === $category ? 'active' : '' }}">
-                                    <i class="{{ $categoryIcons[$cat] ?? 'fas fa-tag' }} category-icon"></i>
-                                    <span>{{ $cat }}</span>
-                                </a>
-                            @endforeach
+                <!-- Search Box -->
+                <div class="search-box-container" data-aos="fade-up" data-aos-delay="100">
+                    <form action="{{ route('news.search') }}" method="GET">
+                        <div style="position: relative;">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" name="q" class="search-input" placeholder="Cari artikel atau berita..."
+                                value="{{ $query }}" autofocus>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 <!-- Results Info -->
                 <div class="results-info glass-light" data-aos="fade-up" data-aos-delay="200">
                     @if($news->total() > 0)
                         <p class="results-count">
-                            Ditemukan <strong>{{ $news->total() }}</strong> artikel dalam kategori "{{ $category }}"
+                            Ditemukan <strong>{{ $news->total() }}</strong> artikel yang cocok dengan pencarian
+                            "{{ $query }}"
                         </p>
                     @else
                         <p class="results-count">
-                            Belum ada artikel dalam kategori "{{ $category }}"
+                            Tidak ditemukan artikel untuk pencarian "{{ $query }}"
                         </p>
                     @endif
                 </div>
 
-                <!-- News Grid -->
+                <!-- Search Results -->
                 @if($news->count() > 0)
-                <div class="news-grid">
-                    @foreach($news as $index => $article)
-                    <article class="news-card glass-light" data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 + 300 }}" onclick="location.href='{{ route('news.show', $article->slug) }}'">
-                        <div class="news-image-container">
-                            <img src="{{ $article->thumbnail_url }}" alt="{{ $article->title }}" class="news-image">
-                            <span class="news-category-badge">{{ $article->category }}</span>
-                        </div>
-                        <div class="news-content">
-                            <h3 class="news-title">{{ $article->title }}</h3>
-                            <p class="news-excerpt">{{ $article->excerpt }}</p>
-                            <div class="news-meta">
-                                <span class="news-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    {{ $article->published_at->format('d M Y') }}
-                                </span>
-                                <span class="news-read-time">
-                                    <i class="fas fa-clock"></i>
-                                    {{ $article->reading_time }}
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-                    @endforeach
-                </div>
+                    <div class="news-grid">
+                        @foreach($news as $index => $article)
+                            <article class="news-card glass-light" data-aos="fade-up"
+                                data-aos-delay="{{ ($index % 3) * 100 + 300 }}"
+                                onclick="location.href='{{ route('news.show', $article->slug) }}'">
+                                <div class="news-image-container">
+                                    <img src="{{ $article->thumbnail_url }}" alt="{{ $article->title }}" class="news-image">
+                                    <span class="news-category-badge">{{ $article->category }}</span>
+                                </div>
+                                <div class="news-content">
+                                    <h3 class="news-title">{{ $article->title }}</h3>
+                                    <p class="news-excerpt">{{ $article->excerpt }}</p>
+                                    <div class="news-meta">
+                                        <span class="news-date">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            {{ $article->published_at->format('d M Y') }}
+                                        </span>
+                                        <span class="news-read-time">
+                                            <i class="fas fa-clock"></i>
+                                            {{ $article->reading_time }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
 
-                <!-- Pagination -->
-                @if($news->hasPages())
-                <div class="pagination-container">
-                    {{ $news->links() }}
-                </div>
-                @endif
+                    <!-- Pagination -->
+                    @if($news->hasPages())
+                        <div class="pagination-container">
+                            {{ $news->appends(['q' => $query])->links() }}
+                        </div>
+                    @endif
 
                 @else
-                <!-- Empty State -->
-                <div class="empty-state glass-light" data-aos="fade-up" data-aos-delay="300">
-                    <i class="fas fa-folder-open empty-icon"></i>
-                    <h2 class="empty-title">Belum Ada Artikel</h2>
-                    <p class="empty-description">
-                        Belum ada artikel yang dipublikasikan dalam kategori "<strong>{{ $category }}</strong>". 
-                        Silakan cek kategori lain atau kembali lagi nanti.
-                    </p>
-                    
-                    <div style="margin-top: 2rem;">
-                        <a href="{{ route('berita') }}" class="category-btn" style="display: inline-flex; padding: 1rem 2rem;">
-                            <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
-                            Lihat Semua Berita
-                        </a>
+                    <!-- Empty State -->
+                    <div class="empty-state glass-light" data-aos="fade-up" data-aos-delay="300">
+                        <i class="fas fa-search empty-icon"></i>
+                        <h2 class="empty-title">Tidak Ada Hasil Ditemukan</h2>
+                        <p class="empty-description">
+                            Maaf, tidak ada artikel atau berita yang cocok dengan pencarian "<strong>{{ $query }}</strong>".
+                            Coba gunakan kata kunci yang berbeda atau lebih umum.
+                        </p>
+
+                        <div class="empty-suggestions">
+                            <h3 style="width: 100%; margin-bottom: 1rem; color: var(--gray-600);">Coba pencarian lain:</h3>
+                            <a href="{{ route('news.search', ['q' => 'oil']) }}" class="suggestion-btn">Oil & Gas</a>
+                            <a href="{{ route('news.search', ['q' => 'teknologi']) }}" class="suggestion-btn">Teknologi</a>
+                            <a href="{{ route('news.search', ['q' => 'bisnis']) }}" class="suggestion-btn">Bisnis</a>
+                            <a href="{{ route('news.search', ['q' => 'lingkungan']) }}"
+                                class="suggestion-btn">Lingkungan</a>
+                            <a href="{{ route('berita') }}" class="suggestion-btn">Lihat Semua Berita</a>
+                        </div>
                     </div>
-                </div>
                 @endif
             </div>
         </section>
@@ -651,7 +715,7 @@
 
         // Parallax effect for oil droplets
         let ticking = false;
-        
+
         function updateDroplets() {
             const scrolled = window.pageYOffset;
             const droplets = document.querySelectorAll('.oil-droplet');
@@ -661,7 +725,7 @@
                 const direction = index % 2 === 0 ? 1 : -1;
                 droplet.style.transform = `translateY(${scrolled * speed * direction}px)`;
             });
-            
+
             ticking = false;
         }
 
@@ -677,7 +741,22 @@
             document.body.classList.remove('loading');
         });
 
-        console.log('📁 Category page loaded successfully!');
+        // Search form handling
+        const searchForm = document.querySelector('form');
+        const searchInput = document.querySelector('.search-input');
+
+        if (searchForm && searchInput) {
+            searchForm.addEventListener('submit', function (e) {
+                const query = searchInput.value.trim();
+                if (!query) {
+                    e.preventDefault();
+                    searchInput.focus();
+                    return false;
+                }
+            });
+        }
+
+        console.log('🔍 Search page loaded successfully!');
         console.log('✨ Oil droplets floating effect activated!');
         console.log('🎯 Glassmorphism theme applied!');
     </script>
